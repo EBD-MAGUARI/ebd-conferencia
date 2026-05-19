@@ -641,290 +641,329 @@ select {
 </div>
 
 <script>
-/* ════════════════════════════════════════
-   CONFERÊNCIA EBD • SISTEMA DE INSCRIÇÃO
-   Desenvolvido por Kairos Agency
-════════════════════════════════════════ */
-
-const APP_CONFIG = Object.freeze({
-  PAYMENT_URL:
-    "https://checkout.infinitepay.io/midian-caldas/1Z7C16LQVb",
-
-  API_URL:
-    "https://script.google.com/macros/s/AKfycbyFRrZ9OWl5xkrKh6pLMK8-TpBcIKWqahcGD3_4rA0qbEYrs4zb4wvHsQZO_jW_duLwgA/exec",
-
-  WHATSAPP_NUMBER: "5591980208294",
-
-  STORAGE_KEY: "ebd_inscricao",
-
-  SYSTEM_NAME: "Conferência da EBD"
-});
-
-/* ════════════════════════════════════════
-   ESTADO GLOBAL
-════════════════════════════════════════ */
-
-const AppState = {
-  participante: {},
-  chatAberto: false,
-  carregandoMensagem: false,
-  historicoChat: []
+/* ═══════════ CONFIG CORRIGIDA ═══════════ */
+const CONFIG = {
+  urlPagamento: "https://checkout.infinitepay.io/midian-caldas/1Z7C16LQVb",
+  urlScript: "https://script.google.com/macros/s/AKfycbyFRrZ9OWl5xkrKh6pLMK8-TpBcIKWqahcGD3_4rA0qbEYrs4zb4wvHsQZO_jW_duLwgA/exec",
+  numeroZap: "5591980208294" // Centralizado para uso em todas as mensagens do sistema
 };
 
-/* ════════════════════════════════════════
-   HELPERS
-════════════════════════════════════════ */
+let dadosParticipante = {};
 
-const $ = (selector) => document.querySelector(selector);
-
-const Helpers = {
-  gerarOrderId() {
-    return `EBD-${Date.now()}`;
-  },
-
-  salvarLocal(dados) {
-    sessionStorage.setItem(
-      APP_CONFIG.STORAGE_KEY,
-      JSON.stringify(dados)
-    );
-  },
-
-  carregarLocal() {
-    return JSON.parse(
-      sessionStorage.getItem(APP_CONFIG.STORAGE_KEY) || "{}"
-    );
-  },
-
-  limparLocal() {
-    sessionStorage.removeItem(APP_CONFIG.STORAGE_KEY);
-  },
-
-  scrollTop() {
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth"
-    });
-  },
-
-  horaAtual() {
-    return new Date().toLocaleTimeString("pt-BR", {
-      hour: "2-digit",
-      minute: "2-digit"
-    });
-  },
-
-  escapeHtml(texto = "") {
-    return texto
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;");
-  },
-
-  formatarMensagem(texto = "") {
-    return this.escapeHtml(texto)
-      .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
-      .replace(/\n/g, "<br>");
-  }
-};
-
-/* ════════════════════════════════════════
-   FORMATAÇÃO TELEFONE
-════════════════════════════════════════ */
-
-$("#telefone").addEventListener("input", (e) => {
-  let valor = e.target.value.replace(/\D/g, "");
-
-  valor = valor.slice(0, 11);
-
-  if (valor.length > 6) {
-    valor = `(${valor.slice(0, 2)}) ${valor.slice(
-      2,
-      7
-    )}-${valor.slice(7)}`;
-  } else if (valor.length > 2) {
-    valor = `(${valor.slice(0, 2)}) ${valor.slice(2)}`;
-  } else if (valor.length > 0) {
-    valor = `(${valor}`;
-  }
-
-  e.target.value = valor;
+/* ─── Formulário ─── */
+document.getElementById("telefone").addEventListener("input", function(){
+  let v = this.value.replace(/\D/g,"");
+  if(v.length > 11) v = v.slice(0,11);
+  if(v.length > 6)        this.value = `(${v.slice(0,2)}) ${v.slice(2,7)}-${v.slice(7)}`;
+  else if(v.length > 2)  this.value = `(${v.slice(0,2)}) ${v.slice(2)}`;
+  else if(v.length > 0)  this.value = `(${v}`;
 });
 
-/* ════════════════════════════════════════
-   FORMULÁRIO PRINCIPAL
-════════════════════════════════════════ */
-
-$("#formDados").addEventListener("submit", async (e) => {
+document.getElementById("formDados").addEventListener("submit", function(e){
   e.preventDefault();
+  const msg = document.getElementById("msgDados");
+  const btn = document.getElementById("btnPagar");
+  const fd  = new FormData(this);
 
-  const mensagem = $("#msgDados");
-  const botao = $("#btnPagar");
-
-  const formData = new FormData(e.target);
-
-  const participante = {
-    nome: formData.get("nome")?.trim(),
-    telefone: formData.get("telefone")?.trim(),
-    congregacao: formData.get("congregacao")?.trim(),
-    grupo: formData.get("grupo")?.trim(),
-    area: formData.get("area"),
-    orderId: Helpers.gerarOrderId()
+  dadosParticipante = {
+    nome:        fd.get("nome")?.trim(),
+    telefone:    fd.get("telefone")?.trim(),
+    congregacao: fd.get("congregacao")?.trim(),
+    grupo:       fd.get("grupo")?.trim(),
+    area:        fd.get("area"),
+    orderId:     "EBD-" + Date.now()
   };
 
-  const camposObrigatorios = [
-    "nome",
-    "telefone",
-    "congregacao",
-    "grupo",
-    "area"
-  ];
-
-  for (const campo of camposObrigatorios) {
-    if (!participante[campo]) {
-      mensagem.innerHTML = `
-        <div class="alert error">
-          Preencha o campo <strong>${campo}</strong>
-        </div>
-      `;
+  for(const c of ["nome","telefone","congregacao","grupo","area"]){
+    if(!dadosParticipante[c]){
+      msg.textContent = `⚠️ Preencha o campo: ${c}.`;
       return;
     }
   }
+  msg.textContent = "";
+  try{ sessionStorage.setItem("inscricao_dados", JSON.stringify(dadosParticipante)); }catch(_){}
 
-  mensagem.innerHTML = "";
-
-  AppState.participante = participante;
-
-  Helpers.salvarLocal(participante);
-
-  window.open(APP_CONFIG.PAYMENT_URL, "_blank");
-
-  botao.disabled = true;
-
-  botao.innerHTML = `
-    <span class="spinner"></span>
-    Pagamento iniciado
-  `;
-
-  $("#aguardandoBox").classList.add("show");
-  $("#btnJaPaguei").classList.add("show");
+  window.open(CONFIG.urlPagamento, "_blank");
+  btn.disabled = true;
+  btn.innerHTML = "💳 Pagamento aberto em nova aba";
+  document.getElementById("aguardandoBox").classList.add("show");
+  document.getElementById("btnJaPaguei").classList.add("show");
 });
 
-/* ════════════════════════════════════════
-   CHAT IA PROFISSIONAL
-════════════════════════════════════════ */
-
-class ChatBot {
-  constructor() {
-    this.chat = $("#agenteChat");
-    this.messages = $("#chatMessages");
-    this.input = $("#chatInput");
+function irParaEtapa2(){
+  if(!dadosParticipante.nome){
+    try{ dadosParticipante = JSON.parse(sessionStorage.getItem("inscricao_dados")||"{}"); }catch(_){}
   }
+  document.getElementById("etapa1").style.display = "none";
+  document.getElementById("etapa2").style.display = "block";
+  setStep(2);
+  window.scrollTo({top:0, behavior:"smooth"});
+}
 
-  iniciar() {
-    this.addBotMessage(`
-Olá! 👋
+function mostrarPreview(input){
+  const wrap = document.getElementById("previewWrap");
+  const img  = document.getElementById("previewImg");
+  const nome = document.getElementById("nomeArquivo");
+  if(!input.files?.[0]) return;
+  const arq = input.files[0];
+  nome.textContent = arq.name;
+  if(arq.type.startsWith("image/")){
+    const r = new FileReader();
+    r.onload = e => { img.src = e.target.result; img.style.display = "block"; };
+    r.readAsDataURL(arq);
+  } else { img.style.display = "none"; }
+  wrap.style.display = "block";
+}
 
-Sou o assistente oficial da
-**Conferência da EBD**.
-
-Posso ajudar com:
-
-• Inscrição
-• Pagamento
-• Envio de comprovante
-• Informações do evento
-• Suporte geral
-    `);
+async function confirmarInscricao(){
+  const arquivoInput = document.getElementById("arquivoComprovante");
+  const msg = document.getElementById("msg");
+  const btn = document.getElementById("btnConfirmar");
+  if(!arquivoInput.files[0]){
+    msg.style.color="#ff4d4d"; msg.innerText="⚠️ Anexe o comprovante de pagamento."; return;
   }
+  btn.disabled = true;
+  msg.style.color="#1f6fff";
+  msg.innerHTML=`<span class="spinner"></span>Finalizando sua inscrição...`;
 
-  addBotMessage(texto) {
-    this.renderMessage("bot", texto);
-  }
+  const file   = arquivoInput.files[0];
+  const reader = new FileReader();
+  reader.onload = async function(){
+    const base64 = reader.result.split(",")[1];
+    const payload = { 
+      ...dadosParticipante, 
+      acao: "salvarInscricao", // Informa ao Apps Script que este payload é o formulário de cadastro
+      arquivoBase64: base64, 
+      arquivoNome: file.name, 
+      arquivoMime: file.type 
+    };
+    try{
+      await fetch(CONFIG.urlScript, { method:"POST", mode:"no-cors", headers:{"Content-Type":"application/json"}, body:JSON.stringify(payload) });
+      try{ sessionStorage.removeItem("inscricao_dados"); }catch(_){}
+      montarTelaFinal(dadosParticipante);
+    }catch(err){
+      msg.style.color="#ff4d4d"; msg.innerHTML="❌ Erro ao salvar. Tente novamente."; btn.disabled=false;
+    }
+  };
+  reader.readAsDataURL(file);
+}
 
-  addUserMessage(texto) {
-    this.renderMessage("user", texto);
-  }
+function montarTelaFinal(d){
+  const texto =
+    `✅ *Inscrição Confirmada — Conferência da EBD*\n\n`+
+    `👤 *Nome:* ${d.nome}\n📱 *Telefone:* ${d.telefone}\n`+
+    `⛪ *Congregação:* ${d.congregacao}\n👥 *Grupo:* ${d.grupo}\n`+
+    `📍 *Área:* ${d.area}\n🆔 *Pedido:* ${d.orderId}\n\n`+
+    `_Estou enviando o comprovante em anexo._`;
+  document.getElementById("linkZap").href = `https://wa.me/${CONFIG.numeroZap}?text=${encodeURIComponent(texto)}`;
+  setStep(3);
+  document.getElementById("etapa2").style.display = "none";
+  document.getElementById("telaFinal").style.display = "block";
+  window.scrollTo({top:0, behavior:"smooth"});
 
-  renderMessage(tipo, texto) {
-    const div = document.createElement("div");
+  // Mensagem proativa do agente
+  setTimeout(() => {
+    if(!chatOpen) toggleChat();
+    addBotMessage("🎉 Uau, inscrição confirmada! Não esqueça de clicar em **\"Enviar comprovante no WhatsApp\"** logo acima para garantir sua vaga. Qualquer dúvida, estou aqui! 😊");
+  }, 1500);
+}
 
-    div.className = `msg-row ${tipo}`;
-
-    div.innerHTML = `
-      ${
-        tipo === "bot"
-          ? `<div class="bot-avatar">✝️</div>`
-          : ""
-      }
-
-      <div class="msg-bubble-wrap">
-        <div class="msg-bubble">
-          ${
-            tipo === "bot"
-              ? Helpers.formatarMensagem(texto)
-              : Helpers.escapeHtml(texto)
-          }
-        </div>
-
-        <span class="msg-time">
-          ${Helpers.horaAtual()}
-        </span>
-      </div>
-    `;
-
-    this.messages.appendChild(div);
-
-    this.messages.scrollTop =
-      this.messages.scrollHeight;
-  }
-
-  mostrarTyping() {
-    const div = document.createElement("div");
-
-    div.id = "typingIndicator";
-
-    div.innerHTML = `
-      <div class="msg-row bot">
-        <div class="bot-avatar">✝️</div>
-
-        <div class="msg-bubble">
-          <div class="typing-indicator">
-            <span></span>
-            <span></span>
-            <span></span>
-          </div>
-        </div>
-      </div>
-    `;
-
-    this.messages.appendChild(div);
-  }
-
-  esconderTyping() {
-    $("#typingIndicator")?.remove();
+function setStep(n){
+  for(let i=1;i<=3;i++){
+    const el = document.getElementById("s"+i);
+    if(!el) return;
+    el.classList.remove("active","done");
+    if(i<n) el.classList.add("done");
+    else if(i===n) el.classList.add("active");
   }
 }
 
-const chatBot = new ChatBot();
+/* ═══════════════════════════════════════════════════
+   AGENTE IA CHAT (CORRIGIDO PARA SCRIPT INTERNO)
+═══════════════════════════════════════════════════ */
+let chatOpen   = false;
+let chatHistory = [];
+let isSending   = false;
+let tooltipTimer = null;
 
-/* ════════════════════════════════════════
-   CONTROLE DE ETAPAS
-════════════════════════════════════════ */
-
-function atualizarEtapa(etapaAtual) {
-  for (let i = 1; i <= 3; i++) {
-    const etapa = $(`#s${i}`);
-
-    etapa.classList.remove("active", "done");
-
-    if (i < etapaAtual) {
-      etapa.classList.add("done");
-    }
-
-    if (i === etapaAtual) {
-      etapa.classList.add("active");
-    }
+// Tooltip inicial
+setTimeout(() => {
+  const t = document.getElementById("fabTooltip");
+  if(t) {
+    t.style.display = "block";
+    tooltipTimer = setTimeout(() => { t.style.display = "none"; }, 5000);
   }
+}, 2500);
+
+function toggleChat(){
+  chatOpen = !chatOpen;
+  const chat = document.getElementById("agenteChat");
+  const fab  = document.getElementById("agenteFab");
+  const notif = document.getElementById("fabNotif");
+  const tooltip = document.getElementById("fabTooltip");
+
+  chat.classList.toggle("open", chatOpen);
+  fab.classList.toggle("open", chatOpen);
+
+  if(chatOpen){
+    if(notif) notif.style.display = "none";
+    if(tooltip) tooltip.style.display = "none";
+    clearTimeout(tooltipTimer);
+    if(chatHistory.length === 0) initChat();
+    setTimeout(() => document.getElementById("chatInput").focus(), 300);
+  }
+}
+
+function initChat(){
+  addBotMessage("Olá! 👋 Sou o assistente de inscrições da **Conferência da EBD**.\n\nComo posso te ajudar hoje? Pode me perguntar sobre o processo de inscrição, pagamento ou qualquer dúvida! 😊");
+}
+
+function getTime(){
+  return new Date().toLocaleTimeString("pt-BR", {hour:"2-digit", minute:"2-digit"});
+}
+
+function addBotMessage(text){
+  const msgs = document.getElementById("chatMessages");
+  const div = document.createElement("div");
+  div.className = "msg-row bot";
+  div.innerHTML = `
+    <div class="bot-avatar">✝️</div>
+    <div class="msg-bubble-wrap">
+      <div class="msg-bubble">${formatMsg(text)}</div>
+      <span class="msg-time">${getTime()}</span>
+    </div>`;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function addUserMessage(text){
+  const msgs = document.getElementById("chatMessages");
+  const div = document.createElement("div");
+  div.className = "msg-row user";
+  div.innerHTML = `
+    <div class="msg-bubble-wrap">
+      <div class="msg-bubble">${escapeHtml(text)}</div>
+      <span class="msg-time">${getTime()}</span>
+    </div>`;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function showTyping(){
+  const msgs = document.getElementById("chatMessages");
+  const div = document.createElement("div");
+  div.className = "msg-row bot"; div.id = "typingIndicator";
+  div.innerHTML = `
+    <div class="bot-avatar">✝️</div>
+    <div class="msg-bubble-wrap">
+      <div class="msg-bubble" style="padding:10px 16px;">
+        <div class="typing-indicator">
+          <div class="typing-dot"></div>
+          <div class="typing-dot"></div>
+          <div class="typing-dot"></div>
+        </div>
+      </div>
+    </div>`;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function hideTyping(){
+  const el = document.getElementById("typingIndicator");
+  if(el) el.remove();
+}
+
+function formatMsg(text){
+  return escapeHtml(text)
+    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+    .replace(/\n/g, "<br>");
+}
+function escapeHtml(t){
+  return t.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+}
+
+function autoResize(el){
+  el.style.height = "auto";
+  el.style.height = Math.min(el.scrollHeight, 100) + "px";
+}
+
+function handleKey(e){
+  if(e.key === "Enter" && !e.shiftKey){ e.preventDefault(); sendMessage(); }
+}
+
+function sendSuggestion(btn){
+  document.getElementById("chatInput").value = btn.textContent;
+  sendMessage();
+}
+
+async function sendMessage(){
+  const input = document.getElementById("chatInput");
+  const text  = input.value.trim();
+  if(!text || isSending) return;
+
+  input.value = ""; input.style.height = "auto";
+  
+  // Renderiza o balão do usuário na interface de forma imediata
+  addUserMessage(text);
+
+  isSending = true;
+  document.getElementById("chatSend").disabled = true;
+  showTyping();
+
+  const paginaInfo = obterContextoPagina();
+
+  try{
+    // Constrói o payload estruturado contendo a ação explícita e o histórico limpo
+    const payloadChat = {
+      acao: "perguntarIA",
+      historico: chatHistory,
+      contexto: paginaInfo,
+      mensagem: text
+    };
+
+    // Realiza a requisição ao Apps Script evitando preflight CORS (usando text/plain)
+    const resp = await fetch(CONFIG.urlScript, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(payloadChat)
+    });
+
+    const data = await resp.json();
+    hideTyping();
+
+    if(data && data.resposta){
+      addBotMessage(data.resposta);
+      // Salva no histórico local ordenado apenas após a confirmação do sucesso da API
+      chatHistory.push({ role: "user", content: text });
+      chatHistory.push({ role: "assistant", content: data.resposta });
+    } else {
+      addBotMessage(`Desculpe, houve um problema técnico. 😅 Para dúvidas urgentes, entre em contato pelo WhatsApp: **${CONFIG.numeroZap}**`);
+    }
+  } catch(err){
+    hideTyping();
+    console.error(err);
+    addBotMessage(`Sem conexão no momento. 😔 Para ajuda imediata, chame no WhatsApp: **${CONFIG.numeroZap}**`);
+  }
+
+  isSending = false;
+  document.getElementById("chatSend").disabled = false;
+}
+
+function obterContextoPagina(){
+  const etapa1 = document.getElementById("etapa1");
+  const etapa2 = document.getElementById("etapa2");
+  const telaFinal = document.getElementById("telaFinal");
+
+  if(telaFinal && telaFinal.style.display !== "none") return "Usuário está na tela de inscrição confirmada (etapa final).";
+  if(etapa2 && etapa2.style.display !== "none")    return "Usuário está na etapa 2 (enviando comprovante de pagamento).";
+
+  const nome = document.querySelector('[name="nome"]')?.value || "";
+  const tel  = document.querySelector('[name="telefone"]')?.value || "";
+  const aguardandoBox = document.getElementById("aguardandoBox");
+  const aguardando = aguardandoBox ? aguardandoBox.classList.contains("show") : false;
+  
+  if(aguardando) return `Usuário abriu o link de pagamento e aguarda. Nome: "${nome}", Telefone: "${tel}".`;
+  return `Usuário está preenchendo o formulário de dados (etapa 1). Nome digitado: "${nome}".`;
 }
 </script>
 </body>
