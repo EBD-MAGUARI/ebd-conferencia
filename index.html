@@ -3,18 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <title>Conferência EBD — Inscrições</title>
-<link rel="icon" href="Design sem nome (2).png"  sizes="48X48" type="image/png">
+<link rel="icon" href="Design sem nome (2).png" sizes="48X48" type="image/png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-/* ── Reset & tokens ────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --green-dark: #0a2a6e;
-  --green-mid: #1040a0;
-  --green-bright: #1a5fd4;
-  --green-light: #e8eeff;
+  --blue-dark: #0a2a6e;
+  --blue-mid: #1040a0;
+  --blue-bright: #1a5fd4;
+  --blue-light: #e8eeff;
   --gold: #c9930a;
   --gold-light: #fff8e1;
   --gold-border: #f5a500;
@@ -22,11 +21,7 @@
   --text: #1a1a1a;
   --text-soft: #555;
   --border: #ddd;
-  --radius: 14px;
   --shadow: 0 20px 50px rgba(0,0,0,.13);
-
-  /* Layout */
-  --card-max: 100%;
   --form-padding: clamp(16px, 4vw, 48px);
 }
 
@@ -36,452 +31,448 @@ body {
   font-family: "DM Sans", sans-serif;
   background: linear-gradient(160deg, #071a4a 0%, #0e2d80 60%, #1a4db5 100%);
   min-height: 100vh;
-  display: block;
   padding: 0;
   margin: 0;
 }
 
 body::before {
   content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
+  position: fixed; inset: 0; pointer-events: none;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='.04'/%3E%3C/svg%3E");
   opacity: .4;
 }
 
-/* ── Card ──────────────────────────────────────────── */
+/* ── Card ── */
 .card {
   width: 100%;
-  
   background: #fff;
-  
-  
   overflow: hidden;
   position: relative;
 }
 
-/* ── Banner ────────────────────────────────────────── */
+/* ── Banner ── */
 .banner { position: relative; overflow: hidden; background: #071a4a; }
 .banner img {
-  width: 100%;
-  display: block;
+  width: 100%; display: block;
   max-height: clamp(140px, 25vw, 220px);
   object-fit: cover;
 }
 .banner-overlay {
-  position: absolute;
-  inset: 0;
+  position: absolute; inset: 0;
   background: linear-gradient(to top, rgba(7,26,74,.85) 0%, transparent 60%);
 }
 
-/* ── Header strip ──────────────────────────────────── */
+/* ── Header ── */
 .header {
-  background: linear-gradient(135deg, var(--green-mid), var(--green-dark));
-  padding: clamp(14px, 3vw, 22px) clamp(16px, 4vw, 24px);
+  background: linear-gradient(135deg, var(--blue-mid), var(--blue-dark));
+  padding: clamp(14px,3vw,22px) clamp(16px,4vw,24px);
   border-bottom: 3px solid var(--gold);
 }
 .header h1 {
   font-family: "Playfair Display", serif;
-  font-size: clamp(16px, 4vw, 22px);
-  font-weight: 900;
-  color: #fff;
-  line-height: 1.25;
-  letter-spacing: -.3px;
-  text-align: center;
+  font-size: clamp(16px,4vw,22px); font-weight: 900;
+  color: #fff; line-height: 1.25; letter-spacing: -.3px; text-align: center;
 }
-.header p {
-  font-size: clamp(11px, 2.5vw, 13px);
-  color: rgba(255,255,255,.82);
-  margin-top: 5px;
-  text-align: center;
-}
+.header p { font-size: clamp(11px,2.5vw,13px); color: rgba(255,255,255,.82); margin-top: 5px; text-align: center; }
 
-/* ── Steps indicator ───────────────────────────────── */
+/* ── Steps ── */
 .steps {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0;
-  padding: clamp(10px, 2.5vw, 16px) clamp(12px, 4vw, 24px);
-  background: #f7faf7;
-  border-bottom: 1px solid #e0e8e0;
+  display: flex; align-items: center; justify-content: center;
+  gap: 0; padding: clamp(10px,2.5vw,16px) clamp(12px,4vw,24px);
+  background: #f5f7ff; border-bottom: 1px solid #d0d8f0;
 }
-.step {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  flex: 1;
-  position: relative;
-}
+.step { display: flex; flex-direction: column; align-items: center; gap: 4px; flex: 1; position: relative; }
 .step:not(:last-child)::after {
-  content: "";
-  position: absolute;
-  top: 14px;
-  left: calc(50% + 16px);
-  right: calc(-50% + 16px);
-  height: 2px;
-  background: #ddd;
-  z-index: 0;
+  content: ""; position: absolute; top: 14px;
+  left: calc(50% + 16px); right: calc(-50% + 16px);
+  height: 2px; background: #ddd; z-index: 0;
 }
-.step.done:not(:last-child)::after { background: var(--green-bright); }
+.step.done:not(:last-child)::after { background: var(--blue-bright); }
 .step-dot {
-  width: clamp(24px, 5vw, 28px);
-  height: clamp(24px, 5vw, 28px);
-  border-radius: 50%;
-  border: 2px solid #ddd;
-  background: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: clamp(10px, 2.5vw, 12px);
-  font-weight: 700;
-  color: #aaa;
-  position: relative;
-  z-index: 1;
-  transition: .3s;
+  width: clamp(24px,5vw,28px); height: clamp(24px,5vw,28px);
+  border-radius: 50%; border: 2px solid #ddd; background: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: clamp(10px,2.5vw,12px); font-weight: 700; color: #aaa;
+  position: relative; z-index: 1; transition: .3s;
 }
-.step.active .step-dot { border-color: var(--green-bright); color: var(--green-bright); background: #e8f5e9; }
-.step.done .step-dot   { border-color: var(--green-bright); background: var(--green-bright); color: #fff; }
-.step-label {
-  font-size: clamp(8px, 2vw, 10px);
-  color: #aaa;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: .5px;
-}
-.step.active .step-label { color: var(--green-mid); }
-.step.done   .step-label { color: var(--green-bright); }
+.step.active .step-dot { border-color: var(--blue-bright); color: var(--blue-bright); background: #e8eeff; }
+.step.done   .step-dot { border-color: var(--blue-bright); background: var(--blue-bright); color: #fff; }
+.step-label { font-size: clamp(8px,2vw,10px); color: #aaa; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; }
+.step.active .step-label { color: var(--blue-mid); }
+.step.done   .step-label { color: var(--blue-bright); }
 
-/* ── Form area ─────────────────────────────────────── */
+/* ── Form area ── */
 .form-area { padding: var(--form-padding); max-width: 860px; margin: 0 auto; }
 
-/* ── Notice box ────────────────────────────────────── */
+/* ── Aviso ── */
 .aviso {
-  background: var(--gold-light);
-  border: 1.5px solid var(--gold-border);
-  border-radius: 10px;
-  padding: clamp(10px, 3vw, 14px) clamp(12px, 3vw, 16px);
-  margin-bottom: clamp(16px, 4vw, 22px);
-  font-size: clamp(12px, 3vw, 13px);
-  color: #6b4000;
-  line-height: 1.65;
+  background: var(--gold-light); border: 1.5px solid var(--gold-border);
+  border-radius: 10px; padding: clamp(10px,3vw,14px) clamp(12px,3vw,16px);
+  margin-bottom: clamp(16px,4vw,22px);
+  font-size: clamp(12px,3vw,13px); color: #6b4000; line-height: 1.65;
 }
-.aviso strong {
-  display: block;
-  font-size: clamp(12px, 3vw, 13.5px);
-  color: #c77a00;
-  margin-bottom: 3px;
-}
+.aviso strong { display: block; font-size: clamp(12px,3vw,13.5px); color: #c77a00; margin-bottom: 3px; }
 
-/* ── Fields ────────────────────────────────────────── */
-.field { margin-bottom: clamp(12px, 3vw, 16px); }
-
-label {
-  display: block;
-  font-size: clamp(11px, 2.5vw, 12.5px);
-  font-weight: 600;
-  color: #333;
-  margin-bottom: 6px;
-}
+/* ── Fields ── */
+.field { margin-bottom: clamp(12px,3vw,16px); }
+label { display: block; font-size: clamp(11px,2.5vw,12.5px); font-weight: 600; color: #333; margin-bottom: 6px; }
 
 input, select {
-  width: 100%;
-  padding: clamp(10px, 2.5vw, 12px) clamp(10px, 3vw, 14px);
-  border-radius: 9px;
-  border: 1.5px solid var(--border);
-  font-size: clamp(14px, 3.5vw, 15px);
-  font-family: "DM Sans", sans-serif;
-  outline: none;
-  transition: .2s;
-  color: var(--text);
-  background: #fff;
-  /* Prevents iOS zoom on focus */
-  -webkit-text-size-adjust: 100%;
+  width: 100%; padding: clamp(10px,2.5vw,12px) clamp(10px,3vw,14px);
+  border-radius: 9px; border: 1.5px solid var(--border);
+  font-size: clamp(14px,3.5vw,15px); font-family: "DM Sans", sans-serif;
+  outline: none; transition: .2s; color: var(--text); background: #fff;
 }
-/* Enforce min font-size 16px on mobile to prevent iOS auto-zoom */
-@media (max-width: 480px) {
-  input, select { font-size: 16px; }
-}
-input:focus, select:focus {
-  border-color: var(--green-bright);
-  box-shadow: 0 0 0 3px rgba(26,95,212,.1);
-}
-input:disabled, select:disabled {
-  background: #f5f5f5;
-  color: #999;
-  cursor: not-allowed;
-}
-
+@media (max-width:480px) { input, select { font-size: 16px; } }
+input:focus, select:focus { border-color: var(--blue-bright); box-shadow: 0 0 0 3px rgba(26,95,212,.1); }
+input:disabled, select:disabled { background: #f5f5f5; color: #999; cursor: not-allowed; }
 select {
-  appearance: none;
-  -webkit-appearance: none;
+  appearance: none; -webkit-appearance: none;
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23666'><path d='M7 10l5 5 5-5z'/></svg>");
-  background-repeat: no-repeat;
-  background-position: right 12px center;
-  background-size: 18px;
-  padding-right: 40px;
+  background-repeat: no-repeat; background-position: right 12px center;
+  background-size: 18px; padding-right: 40px;
 }
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(8px,2vw,12px); }
+@media (max-width:320px) { .row2 { grid-template-columns: 1fr; } }
 
-/* 2-col on ≥360px, single col on tiny screens */
-.row2 {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: clamp(8px, 2vw, 12px);
-}
-@media (max-width: 320px) {
-  .row2 { grid-template-columns: 1fr; }
-}
-
-/* ── Buttons ───────────────────────────────────────── */
+/* ── Buttons ── */
 .btn {
-  width: 100%;
-  padding: clamp(12px, 3vw, 14px);
-  border: none;
-  border-radius: 10px;
-  font-size: clamp(14px, 3.5vw, 15px);
-  font-weight: 700;
-  font-family: "DM Sans", sans-serif;
-  cursor: pointer;
-  transition: .2s;
-  letter-spacing: .2px;
-  touch-action: manipulation; /* faster tap response on mobile */
+  width: 100%; padding: clamp(12px,3vw,14px); border: none; border-radius: 10px;
+  font-size: clamp(14px,3.5vw,15px); font-weight: 700; font-family: "DM Sans", sans-serif;
+  cursor: pointer; transition: .2s; letter-spacing: .2px; touch-action: manipulation;
 }
-.btn:hover   { transform: translateY(-1px); }
-.btn:active  { transform: translateY(0); }
+.btn:hover { transform: translateY(-1px); }
+.btn:active { transform: translateY(0); }
 .btn:disabled { opacity: .55; cursor: default; transform: none !important; box-shadow: none !important; }
 
 .btn-pagar {
   background: linear-gradient(135deg, #c9930a, #e07b00);
-  color: #fff;
-  font-size: clamp(14px, 4vw, 16px);
-  padding: clamp(13px, 3.5vw, 16px);
-  margin-bottom: 12px;
+  color: #fff; font-size: clamp(14px,4vw,16px);
+  padding: clamp(13px,3.5vw,16px); margin-bottom: 12px;
   box-shadow: 0 6px 18px rgba(200,140,0,.3);
 }
 .btn-pagar:hover { box-shadow: 0 10px 24px rgba(200,140,0,.45); }
 
 .btn-japaguei {
-  background: linear-gradient(135deg, var(--green-bright), var(--green-dark));
-  color: #fff;
-  font-size: clamp(14px, 3.5vw, 15px);
-  padding: clamp(12px, 3vw, 14px);
-  box-shadow: 0 6px 18px rgba(26,95,212,.25);
+  background: linear-gradient(135deg, var(--blue-bright), var(--blue-dark));
+  color: #fff; box-shadow: 0 6px 18px rgba(26,95,212,.25);
   display: none;
 }
 .btn-japaguei:hover { box-shadow: 0 10px 24px rgba(26,95,212,.4); }
 .btn-japaguei.show  { display: block; }
 
 .btn-confirmar {
-  background: linear-gradient(135deg, var(--green-bright), var(--green-dark));
-  color: #fff;
-  box-shadow: 0 6px 18px rgba(8,160,2,.25);
+  background: linear-gradient(135deg, var(--blue-bright), var(--blue-dark));
+  color: #fff; box-shadow: 0 6px 18px rgba(26,95,212,.25);
 }
-.btn-confirmar:hover { box-shadow: 0 10px 24px rgba(8,160,2,.4); }
+.btn-confirmar:hover { box-shadow: 0 10px 24px rgba(26,95,212,.4); }
 
-/* ── Upload box ────────────────────────────────────── */
+/* ── Upload ── */
 .upload-box {
-  border: 2px dashed var(--gold-border);
-  border-radius: 10px;
-  padding: clamp(14px, 4vw, 18px);
-  text-align: center;
-  cursor: pointer;
-  background: var(--gold-light);
-  transition: .2s;
+  border: 2px dashed var(--gold-border); border-radius: 10px;
+  padding: clamp(14px,4vw,18px); text-align: center;
+  cursor: pointer; background: var(--gold-light); transition: .2s;
 }
-.upload-box:hover  { background: #fff3cc; border-color: var(--gold); }
+.upload-box:hover { background: #fff3cc; border-color: var(--gold); }
 .upload-box input[type="file"] { display: none; }
-.upload-icon {
-  font-size: clamp(24px, 6vw, 30px);
-  margin-bottom: 6px;
-}
-.upload-box p {
-  margin: 4px 0 0;
-  font-size: clamp(11px, 3vw, 13px);
-  color: #888;
-}
+.upload-icon { font-size: clamp(24px,6vw,30px); margin-bottom: 6px; }
+.upload-box p { margin: 4px 0 0; font-size: clamp(11px,3vw,13px); color: #888; }
 .upload-box p strong { color: #c77a00; }
 
 #previewWrap { margin-top: 12px; display: none; text-align: center; }
 #previewWrap img {
-  max-width: 100%;
-  max-height: clamp(140px, 35vw, 180px);
-  border-radius: 8px;
-  border: 1px solid #ddd;
+  max-width: 100%; max-height: clamp(140px,35vw,180px);
+  border-radius: 8px; border: 1px solid #ddd;
   box-shadow: 0 2px 8px rgba(0,0,0,.1);
 }
 #previewWrap span { display: block; margin-top: 5px; font-size: 12px; color: #777; }
 
-/* ── Divider ───────────────────────────────────────── */
-.divisor {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin: 16px 0;
-  color: #bbb;
-  font-size: 12px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: .8px;
-}
-.divisor::before, .divisor::after { content: ""; flex: 1; height: 1px; background: #e5e5e5; }
-
-/* ── Badge pagamento confirmado ────────────────────── */
+/* ── Badge pago ── */
 .badge-pago {
-  display: none;
-  align-items: center;
-  gap: 10px;
-  background: #e8f5e9;
-  border: 1.5px solid #4caf50;
-  border-radius: 10px;
-  padding: clamp(10px, 3vw, 12px) clamp(12px, 3vw, 16px);
-  margin-bottom: clamp(14px, 3vw, 18px);
-  font-size: clamp(12px, 3vw, 13.5px);
-  color: #1b5e20;
-  font-weight: 600;
+  display: none; align-items: center; gap: 10px;
+  background: #e8eeff; border: 1.5px solid #1a5fd4;
+  border-radius: 10px; padding: clamp(10px,3vw,12px) clamp(12px,3vw,16px);
+  margin-bottom: clamp(14px,3vw,18px);
+  font-size: clamp(12px,3vw,13.5px); color: #0a2a6e; font-weight: 600;
 }
-.badge-pago .ico { font-size: clamp(18px, 5vw, 22px); }
-.badge-pago.show  { display: flex; }
+.badge-pago .ico { font-size: clamp(18px,5vw,22px); }
+.badge-pago.show { display: flex; }
 
-/* ── Aguardando pagamento box ──────────────────────── */
+/* ── Aguardando ── */
 .aguardando-box {
-  display: none;
-  background: #f0f4ff;
-  border: 1.5px solid #b0c4f5;
-  border-radius: 10px;
-  padding: clamp(12px, 3vw, 16px);
-  margin-bottom: 16px;
-  text-align: center;
+  display: none; background: #f0f4ff;
+  border: 1.5px solid #b0c4f5; border-radius: 10px;
+  padding: clamp(12px,3vw,16px); margin-bottom: 16px; text-align: center;
 }
 .aguardando-box.show { display: block; }
 .aguardando-box .pulse {
-  font-size: clamp(26px, 7vw, 32px);
-  display: block;
-  margin-bottom: 8px;
+  font-size: clamp(26px,7vw,32px); display: block; margin-bottom: 8px;
   animation: pulseAnim 1.5s ease-in-out infinite;
 }
-@keyframes pulseAnim {
-  0%,100% { transform: scale(1); opacity: 1; }
-  50%      { transform: scale(1.15); opacity: .7; }
-}
-.aguardando-box p     { font-size: clamp(12px, 3vw, 13.5px); color: #334; font-weight: 600; margin-bottom: 4px; }
-.aguardando-box small { font-size: clamp(11px, 2.5vw, 12px); color: #667; }
+@keyframes pulseAnim { 0%,100%{transform:scale(1);opacity:1;} 50%{transform:scale(1.15);opacity:.7;} }
+.aguardando-box p { font-size: clamp(12px,3vw,13.5px); color: #334; font-weight: 600; margin-bottom: 4px; }
+.aguardando-box small { font-size: clamp(11px,2.5vw,12px); color: #667; }
 
-/* ── Messages ──────────────────────────────────────── */
-#msg      { margin-top: 14px; text-align: center; font-size: clamp(12px, 3vw, 14px); font-weight: 600; min-height: 20px; }
-#msgDados { margin-bottom: 12px; font-size: clamp(11px, 3vw, 13px); color: var(--red); font-weight: 600; }
+/* ── Messages ── */
+#msg      { margin-top: 14px; text-align: center; font-size: clamp(12px,3vw,14px); font-weight: 600; min-height: 20px; }
+#msgDados { margin-bottom: 12px; font-size: clamp(11px,3vw,13px); color: var(--red); font-weight: 600; }
 
-/* ── Loading spinner ───────────────────────────────── */
 .spinner {
-  display: inline-block;
-  width: 18px; height: 18px;
-  border: 2.5px solid rgba(255,255,255,.4);
-  border-top-color: #fff;
-  border-radius: 50%;
-  animation: spin .7s linear infinite;
-  vertical-align: middle;
-  margin-right: 8px;
+  display: inline-block; width: 18px; height: 18px;
+  border: 2.5px solid rgba(255,255,255,.4); border-top-color: #fff;
+  border-radius: 50%; animation: spin .7s linear infinite;
+  vertical-align: middle; margin-right: 8px;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* ── Success screen ────────────────────────────────── */
-#telaFinal { display: none; padding: clamp(28px, 8vw, 40px) var(--form-padding); text-align: center; }
+/* ── Tela Final ── */
+#telaFinal { display: none; padding: clamp(28px,8vw,40px) var(--form-padding); text-align: center; }
 #telaFinal .big-icon {
-  font-size: clamp(48px, 13vw, 62px);
-  margin-bottom: 16px;
+  font-size: clamp(48px,13vw,62px); margin-bottom: 16px;
   animation: pop .5s cubic-bezier(.36,.07,.19,.97);
 }
-@keyframes pop {
-  0%   { transform: scale(0); opacity: 0; }
-  70%  { transform: scale(1.15); }
-  100% { transform: scale(1); opacity: 1; }
-}
+@keyframes pop { 0%{transform:scale(0);opacity:0;} 70%{transform:scale(1.15);} 100%{transform:scale(1);opacity:1;} }
 #telaFinal h2 {
   font-family: "Playfair Display", serif;
-  font-size: clamp(20px, 5vw, 24px);
-  color: var(--green-dark);
-  margin-bottom: 10px;
+  font-size: clamp(20px,5vw,24px); color: var(--blue-dark); margin-bottom: 10px;
 }
-#telaFinal p {
-  color: var(--text-soft);
-  font-size: clamp(13px, 3.5vw, 14px);
-  line-height: 1.75;
-  margin-bottom: 24px;
-}
+#telaFinal p { color: var(--text-soft); font-size: clamp(13px,3.5vw,14px); line-height: 1.75; margin-bottom: 24px; }
 
 .btn-zap {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
+  display: inline-flex; align-items: center; justify-content: center; gap: 10px;
   background: linear-gradient(135deg, #25d366, #128c7e);
-  color: #fff;
-  font-weight: 700;
-  font-size: clamp(13px, 3.5vw, 15px);
-  padding: clamp(12px, 3.5vw, 15px) clamp(20px, 6vw, 28px);
-  border-radius: 12px;
-  text-decoration: none;
-  transition: .2s;
-  box-shadow: 0 6px 18px rgba(37,211,102,.3);
-  width: 100%;
-  max-width: 340px;
+  color: #fff; font-weight: 700; font-size: clamp(13px,3.5vw,15px);
+  padding: clamp(12px,3.5vw,15px) clamp(20px,6vw,28px);
+  border-radius: 12px; text-decoration: none; transition: .2s;
+  box-shadow: 0 6px 18px rgba(37,211,102,.3); width: 100%; max-width: 340px;
 }
 .btn-zap:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(37,211,102,.45); }
 
-/* ── Footer ────────────────────────────────────────── */
 .footer {
-  text-align: center;
-  padding: clamp(10px, 2.5vw, 13px);
-  font-size: clamp(10px, 2.5vw, 11.5px);
-  color: #999;
-  border-top: 1px solid #eee;
+  text-align: center; padding: clamp(10px,2.5vw,13px);
+  font-size: clamp(10px,2.5vw,11.5px); color: #999; border-top: 1px solid #eee;
 }
 
-/* ── Desktop enhancements (≥640px) ─────────────────── */
-@media (min-width: 640px) {
+@media (min-width:640px) {
   .btn:hover { transform: translateY(-2px); }
-  .banner img { max-height: clamp(220px, 30vw, 340px); }
-  .header h1 { font-size: clamp(20px, 3vw, 28px); }
-  .steps { padding: 18px 40px; }
-  .row2 { gap: 20px; }
+  .banner img { max-height: clamp(220px,30vw,340px); }
 }
-
-/* ── Large screens ──────────────────────────────────── */
-@media (min-width: 1024px) {
-  .form-area { padding: 40px clamp(48px, 8vw, 120px); }
-  .header { padding: 26px clamp(48px, 8vw, 120px); }
-  .steps { padding: 18px clamp(48px, 8vw, 120px); }
-  .footer { padding: 16px clamp(48px, 8vw, 120px); text-align: left; }
+@media (min-width:1024px) {
+  .form-area { padding: 40px clamp(48px,8vw,120px); }
+  .header, .steps, .footer { padding-left: clamp(48px,8vw,120px); padding-right: clamp(48px,8vw,120px); }
 }
-
-/* ── High DPI / Retina ──────────────────────────────── */
-@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
-  .banner img { image-rendering: -webkit-optimize-contrast; }
-}
-
-/* ── Reduced motion ─────────────────────────────────── */
-@media (prefers-reduced-motion: reduce) {
+@media (prefers-reduced-motion:reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
 }
+
+/* ════════════════════════════════════════════════
+   AGENTE IA — Chat flutuante
+════════════════════════════════════════════════ */
+
+/* Botão flutuante */
+#agenteFab {
+  position: fixed;
+  bottom: 24px; right: 20px;
+  width: 62px; height: 62px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #1a5fd4, #0a2a6e);
+  border: none; cursor: pointer;
+  box-shadow: 0 6px 24px rgba(10,42,110,.5);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 9999;
+  transition: transform .25s, box-shadow .25s;
+  animation: fabEntrance .6s cubic-bezier(.34,1.56,.64,1) forwards;
+}
+@keyframes fabEntrance {
+  from { transform: scale(0) rotate(-180deg); opacity: 0; }
+  to   { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+#agenteFab:hover { transform: scale(1.1); box-shadow: 0 10px 32px rgba(10,42,110,.65); }
+#agenteFab .fab-icon { font-size: 26px; transition: .25s; }
+#agenteFab.open .fab-icon { transform: rotate(90deg); }
+
+/* Notificação no FAB */
+#fabNotif {
+  position: absolute; top: -2px; right: -2px;
+  width: 18px; height: 18px; border-radius: 50%;
+  background: #f5a500; border: 2px solid #fff;
+  font-size: 10px; font-weight: 700; color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  animation: bounce 1s ease infinite;
+}
+@keyframes bounce { 0%,100%{transform:scale(1);} 50%{transform:scale(1.3);} }
+
+/* Tooltip */
+#fabTooltip {
+  position: fixed; bottom: 100px; right: 20px;
+  background: #0a2a6e; color: #fff;
+  font-size: 13px; font-weight: 600;
+  padding: 8px 14px; border-radius: 10px;
+  box-shadow: 0 4px 14px rgba(0,0,0,.25);
+  white-space: nowrap; z-index: 9998;
+  animation: tooltipIn .4s ease forwards;
+  pointer-events: none;
+}
+#fabTooltip::after {
+  content: ""; position: absolute; bottom: -6px; right: 24px;
+  border: 6px solid transparent; border-bottom: none;
+  border-top-color: #0a2a6e;
+}
+@keyframes tooltipIn { from{opacity:0;transform:translateY(8px);} to{opacity:1;transform:translateY(0);} }
+
+/* Janela do chat */
+#agenteChat {
+  position: fixed;
+  bottom: 100px; right: 20px;
+  width: min(380px, calc(100vw - 32px));
+  height: min(580px, calc(100vh - 130px));
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 24px 64px rgba(10,42,110,.35);
+  display: flex; flex-direction: column;
+  z-index: 9998;
+  overflow: hidden;
+  transform: scale(0) translateY(20px);
+  transform-origin: bottom right;
+  opacity: 0;
+  pointer-events: none;
+  transition: transform .3s cubic-bezier(.34,1.56,.64,1), opacity .2s;
+}
+#agenteChat.open {
+  transform: scale(1) translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Header do chat */
+.chat-header {
+  background: linear-gradient(135deg, #1040a0, #0a2a6e);
+  padding: 16px 18px;
+  display: flex; align-items: center; gap: 12px;
+  border-bottom: 2px solid var(--gold);
+  flex-shrink: 0;
+}
+.chat-avatar {
+  width: 42px; height: 42px; border-radius: 50%;
+  background: linear-gradient(135deg, #f5a500, #c9930a);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0,0,0,.25);
+}
+.chat-header-info { flex: 1; }
+.chat-header-info strong { display: block; color: #fff; font-size: 15px; }
+.chat-header-info span { font-size: 11px; color: rgba(255,255,255,.7); display: flex; align-items: center; gap: 5px; }
+.chat-online-dot { width: 7px; height: 7px; border-radius: 50%; background: #4caf50; display: inline-block; }
+.chat-close {
+  background: none; border: none; color: rgba(255,255,255,.7);
+  font-size: 20px; cursor: pointer; padding: 4px;
+  line-height: 1; transition: color .2s;
+}
+.chat-close:hover { color: #fff; }
+
+/* Mensagens */
+.chat-messages {
+  flex: 1; overflow-y: auto; padding: 16px;
+  display: flex; flex-direction: column; gap: 12px;
+  scroll-behavior: smooth;
+  background: #f8f9ff;
+}
+.chat-messages::-webkit-scrollbar { width: 4px; }
+.chat-messages::-webkit-scrollbar-track { background: transparent; }
+.chat-messages::-webkit-scrollbar-thumb { background: #c8d0e8; border-radius: 4px; }
+
+.msg-row { display: flex; gap: 8px; align-items: flex-end; }
+.msg-row.user { flex-direction: row-reverse; }
+
+.msg-bubble-wrap { max-width: 82%; display: flex; flex-direction: column; gap: 3px; }
+.msg-row.user .msg-bubble-wrap { align-items: flex-end; }
+
+.msg-bubble {
+  padding: 10px 14px; border-radius: 16px;
+  font-size: 13.5px; line-height: 1.55;
+  word-break: break-word;
+}
+.msg-row.bot .msg-bubble {
+  background: #fff; color: var(--text);
+  border-bottom-left-radius: 4px;
+  box-shadow: 0 1px 4px rgba(0,0,0,.08);
+}
+.msg-row.user .msg-bubble {
+  background: linear-gradient(135deg, #1a5fd4, #0a2a6e);
+  color: #fff;
+  border-bottom-right-radius: 4px;
+}
+.msg-time { font-size: 10px; color: #bbb; padding: 0 2px; }
+
+.bot-avatar {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: linear-gradient(135deg, #f5a500, #c9930a);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; flex-shrink: 0;
+}
+
+/* Digitando */
+.typing-indicator { display: flex; gap: 4px; align-items: center; padding: 10px 14px; }
+.typing-dot {
+  width: 7px; height: 7px; border-radius: 50%; background: #c0c8e0;
+  animation: typingBounce 1.2s ease infinite;
+}
+.typing-dot:nth-child(2) { animation-delay: .2s; }
+.typing-dot:nth-child(3) { animation-delay: .4s; }
+@keyframes typingBounce { 0%,60%,100%{transform:translateY(0);} 30%{transform:translateY(-6px);} }
+
+/* Sugestões rápidas */
+.chat-suggestions {
+  padding: 8px 12px; display: flex; gap: 6px; flex-wrap: wrap;
+  border-top: 1px solid #edf0fa; background: #fff; flex-shrink: 0;
+}
+.sug-btn {
+  background: var(--blue-light); color: var(--blue-mid);
+  border: 1px solid #c0d0f0; border-radius: 20px;
+  font-size: 11.5px; font-weight: 600; padding: 5px 12px;
+  cursor: pointer; transition: .2s; white-space: nowrap;
+  font-family: "DM Sans", sans-serif;
+}
+.sug-btn:hover { background: var(--blue-mid); color: #fff; border-color: var(--blue-mid); }
+
+/* Input do chat */
+.chat-input-area {
+  padding: 12px 14px;
+  border-top: 1px solid #edf0fa;
+  display: flex; gap: 8px; align-items: flex-end;
+  background: #fff; flex-shrink: 0;
+}
+#chatInput {
+  flex: 1; border: 1.5px solid #d0d8f0; border-radius: 12px;
+  padding: 10px 14px; font-size: 14px; font-family: "DM Sans", sans-serif;
+  outline: none; resize: none; max-height: 100px;
+  line-height: 1.4; transition: border-color .2s;
+}
+#chatInput:focus { border-color: var(--blue-bright); }
+#chatSend {
+  width: 40px; height: 40px; border-radius: 12px; border: none;
+  background: linear-gradient(135deg, #1a5fd4, #0a2a6e);
+  color: #fff; cursor: pointer; display: flex;
+  align-items: center; justify-content: center;
+  font-size: 16px; flex-shrink: 0; transition: .2s;
+}
+#chatSend:hover { transform: scale(1.08); }
+#chatSend:disabled { opacity: .5; cursor: default; }
 </style>
 </head>
 <body>
 <div class="card">
 
-  <!-- Banner -->
   <div class="banner">
     <img src="ebd.png" alt="Conferência EBD">
     <div class="banner-overlay"></div>
   </div>
 
-  <!-- Header -->
   <div class="header">
     <h1>Conferência da EBD — Inscrições</h1>
     <p>Complete o pagamento e garanta sua vaga no evento!</p>
   </div>
 
-  <!-- Step indicator -->
   <div class="steps" id="steps">
     <div class="step active" id="s1">
       <div class="step-dot">1</div>
@@ -497,17 +488,15 @@ select {
     </div>
   </div>
 
-  <!-- ═══════════════ ETAPA 1 — Dados do participante ═══════════════ -->
+  <!-- ETAPA 1 -->
   <div id="etapa1" class="form-area">
-
     <div class="aviso">
       <strong>📋 Como funciona</strong>
-      Preencha seus dados, clique em <em>"Ir para o Pagamento"</em> (abre em nova aba),
-      efetue o PIX e depois clique em <em>"✅ Já paguei!"</em> para finalizar.
+      Preencha seus dados, clique em <em>"Ir para o Pagamento"</em>,
+      efetue o PIX e clique em <em>"✅ Já paguei!"</em> para finalizar.
     </div>
 
     <form id="formDados" novalidate>
-
       <div class="field">
         <label>Nome completo *</label>
         <input type="text" name="nome" required placeholder="Seu nome completo" autocomplete="name">
@@ -516,7 +505,7 @@ select {
       <div class="row2">
         <div class="field">
           <label>Telefone *</label>
-          <input type="tel" name="telefone" id="telefone" required placeholder="(91) 99999-9999" autocomplete="tel" inputmode="numeric">
+          <input type="tel" name="telefone" id="telefone" required placeholder="(91) 99999-9999" inputmode="numeric">
         </div>
         <div class="field">
           <label>Área *</label>
@@ -561,29 +550,27 @@ select {
       <button type="button" class="btn btn-japaguei" id="btnJaPaguei" onclick="irParaEtapa2()">
         ✅ Já paguei! Continuar
       </button>
-
     </form>
   </div>
 
-  <!-- ═══════════════ ETAPA 2 — Comprovante ═══════════════ -->
+  <!-- ETAPA 2 -->
   <div id="etapa2" class="form-area" style="display:none;">
-
-    <div class="badge-pago show" id="badgePago">
+    <div class="badge-pago show">
       <span class="ico">✅</span>
       <div>
         <strong>Pagamento realizado!</strong><br>
-        <span style="font-weight:400;font-size:12px;">Agora envie o comprovante para finalizar sua inscrição.</span>
+        <span style="font-weight:400;font-size:12px;">Agora envie o comprovante para finalizar.</span>
       </div>
     </div>
 
     <div class="aviso">
       <strong>🧾 Último passo! Envie o comprovante</strong>
-      Faça upload do comprovante do seu PIX para concluir a inscrição e garantir sua vaga.
+      Faça upload do comprovante do PIX para garantir sua vaga.
     </div>
 
     <div class="field">
       <label>📎 Comprovante de pagamento *</label>
-      <div class="upload-box" id="uploadBox" onclick="document.getElementById('arquivoComprovante').click()">
+      <div class="upload-box" onclick="document.getElementById('arquivoComprovante').click()">
         <input type="file" id="arquivoComprovante" accept="image/*,.pdf" onchange="mostrarPreview(this)">
         <div class="upload-icon">📎</div>
         <p><strong>Clique aqui</strong> para selecionar</p>
@@ -602,49 +589,85 @@ select {
     <div id="msg"></div>
   </div>
 
-  <!-- ═══════════════ TELA FINAL ═══════════════ -->
+  <!-- TELA FINAL -->
   <div id="telaFinal">
     <div class="big-icon">🎉</div>
     <h2>Inscrição confirmada!</h2>
-    <p>
-      Seus dados foram salvos com sucesso.<br>
-      Clique abaixo para enviar o comprovante pelo WhatsApp
-    </p>
+    <p>Seus dados foram salvos com sucesso.<br>Clique abaixo para enviar o comprovante pelo WhatsApp.</p>
     <a id="linkZap" href="#" target="_blank" class="btn-zap">
       📲 Enviar comprovante no WhatsApp
     </a>
   </div>
 
-  <div class="footer">Criado por Bruno &mdash; Sistema de inscrição online · EBD</div>
+  <div class="footer">Criado por Bruno — Sistema de inscrição online · EBD</div>
+</div>
+
+<!-- ═══════════════ AGENTE IA ═══════════════ -->
+
+<!-- Tooltip -->
+<div id="fabTooltip" style="display:none;">💬 Precisa de ajuda?</div>
+
+<!-- FAB -->
+<button id="agenteFab" onclick="toggleChat()" aria-label="Abrir assistente">
+  <div id="fabNotif">1</div>
+  <span class="fab-icon">🤖</span>
+</button>
+
+<!-- Janela do chat -->
+<div id="agenteChat" role="dialog" aria-label="Assistente de inscrição">
+  <div class="chat-header">
+    <div class="chat-avatar">✝️</div>
+    <div class="chat-header-info">
+      <strong>Assistente EBD</strong>
+      <span><span class="chat-online-dot"></span>Online agora</span>
+    </div>
+    <button class="chat-close" onclick="toggleChat()" aria-label="Fechar">✕</button>
+  </div>
+
+  <div class="chat-messages" id="chatMessages"></div>
+
+  <div class="chat-suggestions" id="chatSuggestions">
+    <button class="sug-btn" onclick="sendSuggestion(this)">Como me inscrever?</button>
+    <button class="sug-btn" onclick="sendSuggestion(this)">Qual o valor?</button>
+    <button class="sug-btn" onclick="sendSuggestion(this)">Como pagar o PIX?</button>
+    <button class="sug-btn" onclick="sendSuggestion(this)">Deu erro no envio</button>
+  </div>
+
+  <div class="chat-input-area">
+    <textarea id="chatInput" placeholder="Digite sua dúvida..." rows="1"
+      onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+    <button id="chatSend" onclick="sendMessage()" aria-label="Enviar">➤</button>
+  </div>
 </div>
 
 <script>
-/* ── CONFIG ── */
+/* ═══════════ CONFIG ═══════════ */
 const CONFIG = {
   urlPagamento: "https://checkout.infinitepay.io/midian-caldas/1Z7C16LQVb",
   urlScript: "https://script.google.com/macros/s/AKfycbzKdHQy-TaRGXYC9yxbJoLKqIYX017zEiBNGLI9xY1VlZWJL0vNqtd8eeq76Y5vY-g_PQ/exec",
-  numeroZap: "5591992346353"
+  numeroZap: "5591992346353",
+  // ⚠️ Chave da API Anthropic — deixe vazia; o sistema injeta automaticamente no claude.ai
+  // Se rodar fora do claude.ai, insira aqui: "sk-ant-..."
+  anthropicKey: ""
 };
 
 let dadosParticipante = {};
 
-/* ── Máscara telefone ── */
+/* ─── Formulário ─── */
 document.getElementById("telefone").addEventListener("input", function(){
   let v = this.value.replace(/\D/g,"");
   if(v.length > 11) v = v.slice(0,11);
-  if(v.length > 6)      this.value = `(${v.slice(0,2)}) ${v.slice(2,7)}-${v.slice(7)}`;
-  else if(v.length > 2) this.value = `(${v.slice(0,2)}) ${v.slice(2)}`;
-  else if(v.length > 0) this.value = `(${v}`;
+  if(v.length > 6)       this.value = `(${v.slice(0,2)}) ${v.slice(2,7)}-${v.slice(7)}`;
+  else if(v.length > 2)  this.value = `(${v.slice(0,2)}) ${v.slice(2)}`;
+  else if(v.length > 0)  this.value = `(${v}`;
 });
 
-/* ── Etapa 1: Validar e abrir pagamento em nova aba ── */
 document.getElementById("formDados").addEventListener("submit", function(e){
   e.preventDefault();
-
   const msg = document.getElementById("msgDados");
   const btn = document.getElementById("btnPagar");
+  const fd  = new FormData(this);
 
-  const fd = new FormData(this);
   dadosParticipante = {
     nome:        fd.get("nome")?.trim(),
     telefone:    fd.get("telefone")?.trim(),
@@ -654,140 +677,453 @@ document.getElementById("formDados").addEventListener("submit", function(e){
     orderId:     "EBD-" + Date.now()
   };
 
-  const obrigatorios = ["nome","telefone","congregacao","grupo","area"];
-  for(const campo of obrigatorios){
-    if(!dadosParticipante[campo]){
-      msg.textContent = `⚠️ Preencha o campo obrigatório: ${campo}.`;
+  for(const c of ["nome","telefone","congregacao","grupo","area"]){
+    if(!dadosParticipante[c]){
+      msg.textContent = `⚠️ Preencha o campo: ${c}.`;
       return;
     }
   }
-
   msg.textContent = "";
-
   try{ sessionStorage.setItem("inscricao_dados", JSON.stringify(dadosParticipante)); }catch(_){}
 
   window.open(CONFIG.urlPagamento, "_blank");
-
   btn.disabled = true;
-  btn.innerHTML = `💳 Pagamento aberto em nova aba`;
-
+  btn.innerHTML = "💳 Pagamento aberto em nova aba";
   document.getElementById("aguardandoBox").classList.add("show");
   document.getElementById("btnJaPaguei").classList.add("show");
 });
 
-/* ── Ir para Etapa 2 após "Já paguei" ── */
 function irParaEtapa2(){
   if(!dadosParticipante.nome){
-    try{
-      dadosParticipante = JSON.parse(sessionStorage.getItem("inscricao_dados") || "{}");
-    }catch(_){}
+    try{ dadosParticipante = JSON.parse(sessionStorage.getItem("inscricao_dados")||"{}"); }catch(_){}
   }
-
   document.getElementById("etapa1").style.display = "none";
   document.getElementById("etapa2").style.display = "block";
   setStep(2);
   window.scrollTo({top:0, behavior:"smooth"});
 }
 
-/* ── Preview do comprovante ── */
 function mostrarPreview(input){
   const wrap = document.getElementById("previewWrap");
   const img  = document.getElementById("previewImg");
   const nome = document.getElementById("nomeArquivo");
-  if(!input.files || !input.files[0]) return;
+  if(!input.files?.[0]) return;
   const arq = input.files[0];
   nome.textContent = arq.name;
   if(arq.type.startsWith("image/")){
     const r = new FileReader();
     r.onload = e => { img.src = e.target.result; img.style.display = "block"; };
     r.readAsDataURL(arq);
-  } else {
-    img.style.display = "none";
-  }
+  } else { img.style.display = "none"; }
   wrap.style.display = "block";
 }
 
-/* ── Etapa 2: Enviar para Google Sheets ── */
 async function confirmarInscricao(){
   const arquivoInput = document.getElementById("arquivoComprovante");
   const msg = document.getElementById("msg");
   const btn = document.getElementById("btnConfirmar");
-
   if(!arquivoInput.files[0]){
-    msg.style.color = "#ff4d4d";
-    msg.innerText = "⚠️ Por favor, anexe o comprovante de pagamento.";
-    return;
+    msg.style.color="#ff4d4d"; msg.innerText="⚠️ Anexe o comprovante de pagamento."; return;
   }
-
   btn.disabled = true;
-  msg.style.color = "#1f6fff";
-  msg.innerHTML = `<span class="spinner"></span> Finalizando sua inscrição...`;
+  msg.style.color="#1f6fff";
+  msg.innerHTML=`<span class="spinner"></span>Finalizando sua inscrição...`;
 
-  const file = arquivoInput.files[0];
+  const file   = arquivoInput.files[0];
   const reader = new FileReader();
-
   reader.onload = async function(){
     const base64 = reader.result.split(",")[1];
-
-    const payload = {
-      ...dadosParticipante,
-      arquivoBase64: base64,
-      arquivoNome: file.name,
-      arquivoMime: file.type
-    };
-
+    const payload = { ...dadosParticipante, arquivoBase64: base64, arquivoNome: file.name, arquivoMime: file.type };
     try{
-      await fetch(CONFIG.urlScript, {
-        method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-      });
-
+      await fetch(CONFIG.urlScript, { method:"POST", mode:"no-cors", headers:{"Content-Type":"application/json"}, body:JSON.stringify(payload) });
       try{ sessionStorage.removeItem("inscricao_dados"); }catch(_){}
       montarTelaFinal(dadosParticipante);
-
     }catch(err){
-      console.error(err);
-      msg.style.color = "#ff4d4d";
-      msg.innerHTML = "❌ Erro ao salvar. Tente novamente.";
-      btn.disabled = false;
+      msg.style.color="#ff4d4d"; msg.innerHTML="❌ Erro ao salvar. Tente novamente."; btn.disabled=false;
     }
   };
-
   reader.readAsDataURL(file);
 }
 
-/* ── Tela Final ── */
 function montarTelaFinal(d){
   const texto =
-    `✅ *Inscrição Confirmada — Conferência da EBD*\n\n` +
-    `👤 *Nome:* ${d.nome}\n` +
-    `📱 *Telefone:* ${d.telefone}\n` +
-    `⛪ *Congregação:* ${d.congregacao}\n` +
-    `👥 *Grupo:* ${d.grupo}\n` +
-    `📍 *Área:* ${d.area}\n` +
-    `🆔 *Pedido:* ${d.orderId}\n\n` +
+    `✅ *Inscrição Confirmada — Conferência da EBD*\n\n`+
+    `👤 *Nome:* ${d.nome}\n📱 *Telefone:* ${d.telefone}\n`+
+    `⛪ *Congregação:* ${d.congregacao}\n👥 *Grupo:* ${d.grupo}\n`+
+    `📍 *Área:* ${d.area}\n🆔 *Pedido:* ${d.orderId}\n\n`+
     `_Estou enviando o comprovante em anexo._`;
-
-  document.getElementById("linkZap").href =
-    `https://wa.me/${CONFIG.numeroZap}?text=${encodeURIComponent(texto)}`;
-
+  document.getElementById("linkZap").href = `https://wa.me/${CONFIG.numeroZap}?text=${encodeURIComponent(texto)}`;
   setStep(3);
   document.getElementById("etapa2").style.display = "none";
   document.getElementById("telaFinal").style.display = "block";
   window.scrollTo({top:0, behavior:"smooth"});
+
+  // Mensagem proativa do agente
+  setTimeout(() => {
+    if(!chatOpen) toggleChat();
+    addBotMessage("🎉 Uau, inscrição confirmada! Não esqueça de clicar em **\"Enviar comprovante no WhatsApp\"** logo acima para garantir sua vaga. Qualquer dúvida, estou aqui! 😊");
+  }, 1500);
 }
 
-/* ── Steps ── */
 function setStep(n){
-  for(let i=1; i<=3; i++){
+  for(let i=1;i<=3;i++){
     const el = document.getElementById("s"+i);
     if(!el) return;
     el.classList.remove("active","done");
-    if(i < n) el.classList.add("done");
-    else if(i === n) el.classList.add("active");
+    if(i<n) el.classList.add("done");
+    else if(i===n) el.classList.add("active");
   }
+}
+
+```javascript
+/* ═══════════════════════════════════════════════════
+   AGENTE IA OPENAI
+═══════════════════════════════════════════════════ */
+
+let chatOpen = false;
+let chatHistory = [];
+let isSending = false;
+let tooltipTimer = null;
+
+/* ⚠️ IMPORTANTE:
+   Nunca coloque sua API KEY diretamente no GitHub Pages.
+   O ideal é usar backend (Vercel/Netlify/Firebase).
+
+   Para testes rápidos apenas:
+*/
+const OPENAI_API_KEY = "SUA_API_KEY_AQUI";
+
+const SYSTEM_PROMPT = `
+Você é o Assistente de Inscrições da Conferência da EBD (Escola Bíblica Dominical) da AD Maguari.
+
+Seu papel é ajudar participantes a se inscreverem no evento de forma clara, simpática e objetiva.
+
+INFORMAÇÕES DO EVENTO:
+- Evento: Conferência da EBD
+- Organização: EBD AD Maguari
+- Valor da inscrição: R$ 35,00
+- Pagamento: PIX via InfinityPay
+- Áreas disponíveis:
+  - Curuçambá
+  - Distrito Industrial
+  - PAAR
+  - Guajará
+
+ESTILO:
+- Respostas curtas
+- Seja simpático
+- Use emojis moderadamente
+- Fale português brasileiro
+`;
+
+setTimeout(() => {
+  const t = document.getElementById("fabTooltip");
+
+  if(t){
+    t.style.display = "block";
+
+    tooltipTimer = setTimeout(() => {
+      t.style.display = "none";
+    }, 5000);
+  }
+}, 2500);
+
+function toggleChat(){
+
+  chatOpen = !chatOpen;
+
+  const chat = document.getElementById("agenteChat");
+  const fab = document.getElementById("agenteFab");
+
+  if(chat){
+    chat.classList.toggle("open", chatOpen);
+  }
+
+  if(fab){
+    fab.classList.toggle("open", chatOpen);
+  }
+
+  if(chatOpen){
+
+    if(chatHistory.length === 0){
+      initChat();
+    }
+
+    setTimeout(() => {
+      const input = document.getElementById("chatInput");
+
+      if(input){
+        input.focus();
+      }
+    }, 300);
+  }
+}
+
+function initChat(){
+
+  addBotMessage(`
+Olá 👋
+
+Seja bem-vindo à Conferência da EBD.
+
+Estou aqui para ajudar na sua inscrição 😊
+  `);
+}
+
+function getTime(){
+
+  return new Date().toLocaleTimeString("pt-BR", {
+    hour: "2-digit",
+    minute: "2-digit"
+  });
+}
+
+function addBotMessage(text){
+
+  const msgs = document.getElementById("chatMessages");
+
+  const div = document.createElement("div");
+
+  div.className = "msg-row bot";
+
+  div.innerHTML = `
+    <div class="bot-avatar">✝️</div>
+
+    <div class="msg-bubble-wrap">
+      <div class="msg-bubble">
+        ${formatMsg(text)}
+      </div>
+
+      <span class="msg-time">
+        ${getTime()}
+      </span>
+    </div>
+  `;
+
+  msgs.appendChild(div);
+
+  msgs.scrollTop = msgs.scrollHeight;
+
+  chatHistory.push({
+    role: "assistant",
+    content: text
+  });
+}
+
+function addUserMessage(text){
+
+  const msgs = document.getElementById("chatMessages");
+
+  const div = document.createElement("div");
+
+  div.className = "msg-row user";
+
+  div.innerHTML = `
+    <div class="msg-bubble-wrap">
+
+      <div class="msg-bubble">
+        ${escapeHtml(text)}
+      </div>
+
+      <span class="msg-time">
+        ${getTime()}
+      </span>
+
+    </div>
+  `;
+
+  msgs.appendChild(div);
+
+  msgs.scrollTop = msgs.scrollHeight;
+
+  chatHistory.push({
+    role: "user",
+    content: text
+  });
+}
+
+function showTyping(){
+
+  const msgs = document.getElementById("chatMessages");
+
+  const div = document.createElement("div");
+
+  div.className = "msg-row bot";
+
+  div.id = "typingIndicator";
+
+  div.innerHTML = `
+    <div class="bot-avatar">✝️</div>
+
+    <div class="msg-bubble-wrap">
+
+      <div class="msg-bubble">
+
+        <div class="typing-indicator">
+          <div class="typing-dot"></div>
+          <div class="typing-dot"></div>
+          <div class="typing-dot"></div>
+        </div>
+
+      </div>
+
+    </div>
+  `;
+
+  msgs.appendChild(div);
+
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function hideTyping(){
+
+  const el = document.getElementById("typingIndicator");
+
+  if(el){
+    el.remove();
+  }
+}
+
+function formatMsg(text){
+
+  return escapeHtml(text)
+    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+    .replace(/\n/g, "<br>");
+}
+
+function escapeHtml(text){
+
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+
+function autoResize(el){
+
+  el.style.height = "auto";
+
+  el.style.height =
+    Math.min(el.scrollHeight, 100) + "px";
+}
+
+function handleKey(e){
+
+  if(e.key === "Enter" && !e.shiftKey){
+
+    e.preventDefault();
+
+    sendMessage();
+  }
+}
+
+async function sendMessage(){
+
+  const input = document.getElementById("chatInput");
+
+  const text = input.value.trim();
+
+  if(!text || isSending){
+    return;
+  }
+
+  input.value = "";
+
+  addUserMessage(text);
+
+  isSending = true;
+
+  document.getElementById("chatSend").disabled = true;
+
+  showTyping();
+
+  try{
+
+    const response = await fetch(
+      "https://api.openai.com/v1/chat/completions",
+      {
+        method: "POST",
+
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${OPENAI_API_KEY}`
+        },
+
+        body: JSON.stringify({
+
+          model: "gpt-4.1-mini",
+
+          messages: [
+            {
+              role: "system",
+              content: SYSTEM_PROMPT
+            },
+
+            ...chatHistory
+          ],
+
+          temperature: 0.7,
+          max_tokens: 300
+        })
+      }
+    );
+
+    const data = await response.json();
+
+    hideTyping();
+
+    if(data.choices?.[0]?.message?.content){
+
+      addBotMessage(
+        data.choices[0].message.content
+      );
+
+    } else {
+
+      addBotMessage(`
+Desculpe 😔
+
+Não consegui responder agora.
+
+Entre em contato no WhatsApp:
+(91) 99923-4635
+      `);
+    }
+
+  } catch(error){
+
+    console.error(error);
+
+    hideTyping();
+
+    addBotMessage(`
+⚠️ Erro de conexão.
+
+Tente novamente mais tarde.
+    `);
+  }
+
+  isSending = false;
+
+  document.getElementById("chatSend").disabled = false;
+}
+```
+
+
+function obterContextoPagina(){
+  const etapa1 = document.getElementById("etapa1");
+  const etapa2 = document.getElementById("etapa2");
+  const telaFinal = document.getElementById("telaFinal");
+
+  if(telaFinal.style.display !== "none") return "Usuário está na tela de inscrição confirmada (etapa final).";
+  if(etapa2.style.display !== "none")    return "Usuário está na etapa 2 (enviando comprovante de pagamento).";
+
+  // Etapa 1 — captura campos preenchidos
+  const nome = document.querySelector('[name="nome"]')?.value || "";
+  const tel  = document.querySelector('[name="telefone"]')?.value || "";
+  const aguardando = document.getElementById("aguardandoBox").classList.contains("show");
+  if(aguardando) return `Usuário abriu o link de pagamento e aguarda. Nome: "${nome}", Telefone: "${tel}".`;
+  return `Usuário está preenchendo o formulário de dados (etapa 1). Nome digitado: "${nome}".`;
 }
 </script>
 </body>
