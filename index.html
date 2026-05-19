@@ -641,14 +641,11 @@ select {
 </div>
 
 <script>
-/* ═══════════ CONFIG ═══════════ */
+/* ═══════════ CONFIG CORRIGIDA ═══════════ */
 const CONFIG = {
   urlPagamento: "https://checkout.infinitepay.io/midian-caldas/1Z7C16LQVb",
   urlScript: "https://script.google.com/macros/s/AKfycbzKdHQy-TaRGXYC9yxbJoLKqIYX017zEiBNGLI9xY1VlZWJL0vNqtd8eeq76Y5vY-g_PQ/exec",
-  numeroZap: "5591992346353",
-  // ⚠️ Chave da API Anthropic — deixe vazia; o sistema injeta automaticamente no claude.ai
-  // Se rodar fora do claude.ai, insira aqui: "sk-ant-..."
-  anthropicKey: "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"
+  numeroZap: "5591992346353" // Centralizado para uso em todo o script
 };
 
 let dadosParticipante = {};
@@ -657,7 +654,7 @@ let dadosParticipante = {};
 document.getElementById("telefone").addEventListener("input", function(){
   let v = this.value.replace(/\D/g,"");
   if(v.length > 11) v = v.slice(0,11);
-  if(v.length > 6)       this.value = `(${v.slice(0,2)}) ${v.slice(2,7)}-${v.slice(7)}`;
+  if(v.length > 6)        this.value = `(${v.slice(0,2)}) ${v.slice(2,7)}-${v.slice(7)}`;
   else if(v.length > 2)  this.value = `(${v.slice(0,2)}) ${v.slice(2)}`;
   else if(v.length > 0)  this.value = `(${v}`;
 });
@@ -733,7 +730,7 @@ async function confirmarInscricao(){
   const reader = new FileReader();
   reader.onload = async function(){
     const base64 = reader.result.split(",")[1];
-    const payload = { ...dadosParticipante, arquivoBase64: base64, arquivoNome: file.name, arquivoMime: file.type };
+    const payload = { ...dadosParticipante, acao: "salvarInscricao", arquivoBase64: base64, arquivoNome: file.name, arquivoMime: file.type };
     try{
       await fetch(CONFIG.urlScript, { method:"POST", mode:"no-cors", headers:{"Content-Type":"application/json"}, body:JSON.stringify(payload) });
       try{ sessionStorage.removeItem("inscricao_dados"); }catch(_){}
@@ -776,51 +773,20 @@ function setStep(n){
 }
 
 /* ═══════════════════════════════════════════════════
-   AGENTE IA
+   AGENTE IA (CORRIGIDO)
 ═══════════════════════════════════════════════════ */
 let chatOpen   = false;
 let chatHistory = [];
 let isSending   = false;
 let tooltipTimer = null;
 
-const SYSTEM_PROMPT = `Você é o Assistente de Inscrições da Conferência da EBD (Escola Bíblica Dominical) da AD Maguari.
-
-Seu papel é ajudar participantes a se inscreverem no evento de forma clara, simpática e objetiva.
-
-INFORMAÇÕES DO EVENTO:
-- Evento: Conferência da EBD
-- Organização: EBD AD Maguari
-- Valor da inscrição: R$ 35,00
-- Pagamento: PIX via InfinityPay (link gerado automaticamente na página)
-- Áreas disponíveis: Curuçambá, Distrito Industrial, PAAR, Guajará
-
-FLUXO DE INSCRIÇÃO (3 etapas):
-1. Dados: preencher nome, telefone, área, congregação, grupo
-2. Pagamento: clicar em "Ir para o Pagamento", pagar o PIX no InfinityPay, voltar e clicar "Já paguei"
-3. Comprovante: fazer upload do comprovante e clicar "Confirmar inscrição"
-4. Após confirmar: enviar comprovante pelo WhatsApp para o líder de área confirmar a vaga
-
-PROBLEMAS COMUNS E SOLUÇÕES:
-- Campo não preenchido: verificar se todos os campos obrigatórios (*) foram preenchidos
-- Link de pagamento não abre: desativar bloqueador de pop-ups ou tentar outro navegador
-- Comprovante não envia: usar imagem (JPG/PNG) ao invés de PDF, verificar conexão
-- Erro ao confirmar inscrição: verificar internet e tentar novamente; se persistir, enviar comprovante direto no WhatsApp
-- Não recebeu confirmação: o líder de área confirma após receber o comprovante no WhatsApp
-
-ESTILO DE RESPOSTA:
-- Seja caloroso, simpático e use emojis moderadamente
-- Respostas curtas e diretas (máx. 3-4 frases)
-- Se não souber algo, oriente a contatar pelo WhatsApp: (91) 99923-4635
-- Não invente informações que não foram fornecidas
-- Fale em português brasileiro
-
-Ao final de respostas sobre problemas técnicos, sempre ofereça ajuda adicional.`;
-
 // Tooltip inicial
 setTimeout(() => {
   const t = document.getElementById("fabTooltip");
-  t.style.display = "block";
-  tooltipTimer = setTimeout(() => { t.style.display = "none"; }, 5000);
+  if(t){
+    t.style.display = "block";
+    tooltipTimer = setTimeout(() => { t.style.display = "none"; }, 5000);
+  }
 }, 2500);
 
 function toggleChat(){
@@ -834,8 +800,8 @@ function toggleChat(){
   fab.classList.toggle("open", chatOpen);
 
   if(chatOpen){
-    notif.style.display = "none";
-    tooltip.style.display = "none";
+    if(notif) notif.style.display = "none";
+    if(tooltip) tooltip.style.display = "none";
     clearTimeout(tooltipTimer);
     if(chatHistory.length === 0) initChat();
     setTimeout(() => document.getElementById("chatInput").focus(), 300);
@@ -862,7 +828,6 @@ function addBotMessage(text){
     </div>`;
   msgs.appendChild(div);
   msgs.scrollTop = msgs.scrollHeight;
-  chatHistory.push({ role:"assistant", content: text });
 }
 
 function addUserMessage(text){
@@ -876,7 +841,6 @@ function addUserMessage(text){
     </div>`;
   msgs.appendChild(div);
   msgs.scrollTop = msgs.scrollHeight;
-  chatHistory.push({ role:"user", content: text });
 }
 
 function showTyping(){
@@ -932,52 +896,46 @@ async function sendMessage(){
   if(!text || isSending) return;
 
   input.value = ""; input.style.height = "auto";
+  
+  // Renderiza a mensagem na tela do usuário imediatamente
   addUserMessage(text);
 
   isSending = true;
   document.getElementById("chatSend").disabled = true;
   showTyping();
 
-  // Contexto da página atual
   const paginaInfo = obterContextoPagina();
 
   try{
-    const messages = [
-      ...chatHistory.slice(0, -1), // histórico sem a última msg do user (já enviamos)
-      { role:"user", content: `[Contexto da página: ${paginaInfo}]\n\n${text}` }
-    ];
+    // Prepara o payload para enviar ao Google Apps Script com a ação específica para o Chat
+    const payloadChat = {
+      acao: "perguntarIA",
+      historico: chatHistory,
+      contexto: paginaInfo,
+      mensagem: text
+    };
 
-   const resp = await fetch("https://api.anthropic.com/v1/messages", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-    "x-api-key": CONFIG.anthropicKey,
-    "anthropic-version": "2023-06-01"
-  },
-  body: JSON.stringify({
-    model: "claude-sonnet-4-20250514",
-    max_tokens: 1000,
-    system: SYSTEM_PROMPT,
-    messages: messages.filter(
-      m => m.role === "user" || m.role === "assistant"
-    )
-  })
-});
+    const resp = await fetch(CONFIG.urlScript, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" }, // Evita problemas de preflight/CORS no Apps Script
+      body: JSON.stringify(payloadChat)
+    });
 
     const data = await resp.json();
     hideTyping();
 
-    if(data.content?.[0]?.text){
-      addBotMessage(data.content[0].text);
-    } else if(data.error){
-      addBotMessage("Desculpe, houve um problema técnico. 😅 Para dúvidas urgentes, entre em contato pelo WhatsApp: **(91) 98020-8294**");
+    if(data && data.resposta){
+      addBotMessage(data.resposta);
+      // Atualiza o histórico local original apenas após o sucesso
+      chatHistory.push({ role: "user", content: text });
+      chatHistory.push({ role: "assistant", content: data.resposta });
     } else {
-      addBotMessage("Hmm, não consegui processar sua pergunta. Tente novamente ou pergunte de outra forma! 😊");
+      addBotMessage(`Desculpe, não consegui processar. Caso o problema persista, fale conosco no WhatsApp: **${CONFIG.numeroZap}**`);
     }
   } catch(err){
     hideTyping();
     console.error(err);
-    addBotMessage("Sem conexão no momento. 😔 Para ajuda imediata, chame no WhatsApp: **(91) 98020-8294**");
+    addBotMessage(`Sem conexão no momento. 😔 Para ajuda imediata, chame no WhatsApp: **${CONFIG.numeroZap}**`);
   }
 
   isSending = false;
@@ -989,13 +947,14 @@ function obterContextoPagina(){
   const etapa2 = document.getElementById("etapa2");
   const telaFinal = document.getElementById("telaFinal");
 
-  if(telaFinal.style.display !== "none") return "Usuário está na tela de inscrição confirmada (etapa final).";
-  if(etapa2.style.display !== "none")    return "Usuário está na etapa 2 (enviando comprovante de pagamento).";
+  if(telaFinal && telaFinal.style.display !== "none") return "Usuário está na tela de inscrição confirmada (etapa final).";
+  if(etapa2 && etapa2.style.display !== "none")    return "Usuário está na etapa 2 (enviando comprovante de pagamento).";
 
-  // Etapa 1 — captura campos preenchidos
   const nome = document.querySelector('[name="nome"]')?.value || "";
   const tel  = document.querySelector('[name="telefone"]')?.value || "";
-  const aguardando = document.getElementById("aguardandoBox").classList.contains("show");
+  const aguardandoBox = document.getElementById("aguardandoBox");
+  const aguardando = aguardandoBox ? aguardandoBox.classList.contains("show") : false;
+  
   if(aguardando) return `Usuário abriu o link de pagamento e aguarda. Nome: "${nome}", Telefone: "${tel}".`;
   return `Usuário está preenchendo o formulário de dados (etapa 1). Nome digitado: "${nome}".`;
 }
