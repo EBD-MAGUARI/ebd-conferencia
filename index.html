@@ -775,26 +775,15 @@ function setStep(n){
   }
 }
 
-```javascript
 /* ═══════════════════════════════════════════════════
-   AGENTE IA OPENAI
+   AGENTE IA
 ═══════════════════════════════════════════════════ */
-
-let chatOpen = false;
+let chatOpen   = false;
 let chatHistory = [];
-let isSending = false;
+let isSending   = false;
 let tooltipTimer = null;
 
-/* ⚠️ IMPORTANTE:
-   Nunca coloque sua API KEY diretamente no GitHub Pages.
-   O ideal é usar backend (Vercel/Netlify/Firebase).
-
-   Para testes rápidos apenas:
-*/
-const OPENAI_API_KEY = "SUA_API_KEY_AQUI";
-
-const SYSTEM_PROMPT = `
-Você é o Assistente de Inscrições da Conferência da EBD (Escola Bíblica Dominical) da AD Maguari.
+const SYSTEM_PROMPT = `Você é o Assistente de Inscrições da Conferência da EBD (Escola Bíblica Dominical) da AD Maguari.
 
 Seu papel é ajudar participantes a se inscreverem no evento de forma clara, simpática e objetiva.
 
@@ -802,313 +791,192 @@ INFORMAÇÕES DO EVENTO:
 - Evento: Conferência da EBD
 - Organização: EBD AD Maguari
 - Valor da inscrição: R$ 35,00
-- Pagamento: PIX via InfinityPay
-- Áreas disponíveis:
-  - Curuçambá
-  - Distrito Industrial
-  - PAAR
-  - Guajará
+- Pagamento: PIX via InfinityPay (link gerado automaticamente na página)
+- Áreas disponíveis: Curuçambá, Distrito Industrial, PAAR, Guajará
 
-ESTILO:
-- Respostas curtas
-- Seja simpático
-- Use emojis moderadamente
-- Fale português brasileiro
-`;
+FLUXO DE INSCRIÇÃO (3 etapas):
+1. Dados: preencher nome, telefone, área, congregação, grupo
+2. Pagamento: clicar em "Ir para o Pagamento", pagar o PIX no InfinityPay, voltar e clicar "Já paguei"
+3. Comprovante: fazer upload do comprovante e clicar "Confirmar inscrição"
+4. Após confirmar: enviar comprovante pelo WhatsApp para o líder de área confirmar a vaga
 
+PROBLEMAS COMUNS E SOLUÇÕES:
+- Campo não preenchido: verificar se todos os campos obrigatórios (*) foram preenchidos
+- Link de pagamento não abre: desativar bloqueador de pop-ups ou tentar outro navegador
+- Comprovante não envia: usar imagem (JPG/PNG) ao invés de PDF, verificar conexão
+- Erro ao confirmar inscrição: verificar internet e tentar novamente; se persistir, enviar comprovante direto no WhatsApp
+- Não recebeu confirmação: o líder de área confirma após receber o comprovante no WhatsApp
+
+ESTILO DE RESPOSTA:
+- Seja caloroso, simpático e use emojis moderadamente
+- Respostas curtas e diretas (máx. 3-4 frases)
+- Se não souber algo, oriente a contatar pelo WhatsApp: (91) 99923-4635
+- Não invente informações que não foram fornecidas
+- Fale em português brasileiro
+
+Ao final de respostas sobre problemas técnicos, sempre ofereça ajuda adicional.`;
+
+// Tooltip inicial
 setTimeout(() => {
   const t = document.getElementById("fabTooltip");
-
-  if(t){
-    t.style.display = "block";
-
-    tooltipTimer = setTimeout(() => {
-      t.style.display = "none";
-    }, 5000);
-  }
+  t.style.display = "block";
+  tooltipTimer = setTimeout(() => { t.style.display = "none"; }, 5000);
 }, 2500);
 
 function toggleChat(){
-
   chatOpen = !chatOpen;
-
   const chat = document.getElementById("agenteChat");
-  const fab = document.getElementById("agenteFab");
+  const fab  = document.getElementById("agenteFab");
+  const notif = document.getElementById("fabNotif");
+  const tooltip = document.getElementById("fabTooltip");
 
-  if(chat){
-    chat.classList.toggle("open", chatOpen);
-  }
-
-  if(fab){
-    fab.classList.toggle("open", chatOpen);
-  }
+  chat.classList.toggle("open", chatOpen);
+  fab.classList.toggle("open", chatOpen);
 
   if(chatOpen){
-
-    if(chatHistory.length === 0){
-      initChat();
-    }
-
-    setTimeout(() => {
-      const input = document.getElementById("chatInput");
-
-      if(input){
-        input.focus();
-      }
-    }, 300);
+    notif.style.display = "none";
+    tooltip.style.display = "none";
+    clearTimeout(tooltipTimer);
+    if(chatHistory.length === 0) initChat();
+    setTimeout(() => document.getElementById("chatInput").focus(), 300);
   }
 }
 
 function initChat(){
-
-  addBotMessage(`
-Olá 👋
-
-Seja bem-vindo à Conferência da EBD.
-
-Estou aqui para ajudar na sua inscrição 😊
-  `);
+  addBotMessage("Olá! 👋 Sou o assistente de inscrições da **Conferência da EBD**.\n\nComo posso te ajudar hoje? Pode me perguntar sobre o processo de inscrição, pagamento ou qualquer dúvida! 😊");
 }
 
 function getTime(){
-
-  return new Date().toLocaleTimeString("pt-BR", {
-    hour: "2-digit",
-    minute: "2-digit"
-  });
+  return new Date().toLocaleTimeString("pt-BR", {hour:"2-digit", minute:"2-digit"});
 }
 
 function addBotMessage(text){
-
   const msgs = document.getElementById("chatMessages");
-
   const div = document.createElement("div");
-
   div.className = "msg-row bot";
-
   div.innerHTML = `
     <div class="bot-avatar">✝️</div>
-
     <div class="msg-bubble-wrap">
-      <div class="msg-bubble">
-        ${formatMsg(text)}
-      </div>
-
-      <span class="msg-time">
-        ${getTime()}
-      </span>
-    </div>
-  `;
-
+      <div class="msg-bubble">${formatMsg(text)}</div>
+      <span class="msg-time">${getTime()}</span>
+    </div>`;
   msgs.appendChild(div);
-
   msgs.scrollTop = msgs.scrollHeight;
-
-  chatHistory.push({
-    role: "assistant",
-    content: text
-  });
+  chatHistory.push({ role:"assistant", content: text });
 }
 
 function addUserMessage(text){
-
   const msgs = document.getElementById("chatMessages");
-
   const div = document.createElement("div");
-
   div.className = "msg-row user";
-
   div.innerHTML = `
     <div class="msg-bubble-wrap">
-
-      <div class="msg-bubble">
-        ${escapeHtml(text)}
-      </div>
-
-      <span class="msg-time">
-        ${getTime()}
-      </span>
-
-    </div>
-  `;
-
+      <div class="msg-bubble">${escapeHtml(text)}</div>
+      <span class="msg-time">${getTime()}</span>
+    </div>`;
   msgs.appendChild(div);
-
   msgs.scrollTop = msgs.scrollHeight;
-
-  chatHistory.push({
-    role: "user",
-    content: text
-  });
+  chatHistory.push({ role:"user", content: text });
 }
 
 function showTyping(){
-
   const msgs = document.getElementById("chatMessages");
-
   const div = document.createElement("div");
-
-  div.className = "msg-row bot";
-
-  div.id = "typingIndicator";
-
+  div.className = "msg-row bot"; div.id = "typingIndicator";
   div.innerHTML = `
     <div class="bot-avatar">✝️</div>
-
     <div class="msg-bubble-wrap">
-
-      <div class="msg-bubble">
-
+      <div class="msg-bubble" style="padding:10px 16px;">
         <div class="typing-indicator">
           <div class="typing-dot"></div>
           <div class="typing-dot"></div>
           <div class="typing-dot"></div>
         </div>
-
       </div>
-
-    </div>
-  `;
-
+    </div>`;
   msgs.appendChild(div);
-
   msgs.scrollTop = msgs.scrollHeight;
 }
 
 function hideTyping(){
-
   const el = document.getElementById("typingIndicator");
-
-  if(el){
-    el.remove();
-  }
+  if(el) el.remove();
 }
 
 function formatMsg(text){
-
   return escapeHtml(text)
     .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
     .replace(/\n/g, "<br>");
 }
-
-function escapeHtml(text){
-
-  return text
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
+function escapeHtml(t){
+  return t.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
 }
 
 function autoResize(el){
-
   el.style.height = "auto";
-
-  el.style.height =
-    Math.min(el.scrollHeight, 100) + "px";
+  el.style.height = Math.min(el.scrollHeight, 100) + "px";
 }
 
 function handleKey(e){
+  if(e.key === "Enter" && !e.shiftKey){ e.preventDefault(); sendMessage(); }
+}
 
-  if(e.key === "Enter" && !e.shiftKey){
-
-    e.preventDefault();
-
-    sendMessage();
-  }
+function sendSuggestion(btn){
+  document.getElementById("chatInput").value = btn.textContent;
+  sendMessage();
 }
 
 async function sendMessage(){
-
   const input = document.getElementById("chatInput");
+  const text  = input.value.trim();
+  if(!text || isSending) return;
 
-  const text = input.value.trim();
-
-  if(!text || isSending){
-    return;
-  }
-
-  input.value = "";
-
+  input.value = ""; input.style.height = "auto";
   addUserMessage(text);
 
   isSending = true;
-
   document.getElementById("chatSend").disabled = true;
-
   showTyping();
 
+  // Contexto da página atual
+  const paginaInfo = obterContextoPagina();
+
   try{
+    const messages = [
+      ...chatHistory.slice(0, -1), // histórico sem a última msg do user (já enviamos)
+      { role:"user", content: `[Contexto da página: ${paginaInfo}]\n\n${text}` }
+    ];
 
-    const response = await fetch(
-      "https://api.openai.com/v1/chat/completions",
-      {
-        method: "POST",
+    const resp = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 1000,
+        system: SYSTEM_PROMPT,
+        messages: messages.filter(m => m.role === "user" || m.role === "assistant")
+      })
+    });
 
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${OPENAI_API_KEY}`
-        },
-
-        body: JSON.stringify({
-
-          model: "gpt-4.1-mini",
-
-          messages: [
-            {
-              role: "system",
-              content: SYSTEM_PROMPT
-            },
-
-            ...chatHistory
-          ],
-
-          temperature: 0.7,
-          max_tokens: 300
-        })
-      }
-    );
-
-    const data = await response.json();
-
+    const data = await resp.json();
     hideTyping();
 
-    if(data.choices?.[0]?.message?.content){
-
-      addBotMessage(
-        data.choices[0].message.content
-      );
-
+    if(data.content?.[0]?.text){
+      addBotMessage(data.content[0].text);
+    } else if(data.error){
+      addBotMessage("Desculpe, houve um problema técnico. 😅 Para dúvidas urgentes, entre em contato pelo WhatsApp: **(91) 99923-4635**");
     } else {
-
-      addBotMessage(`
-Desculpe 😔
-
-Não consegui responder agora.
-
-Entre em contato no WhatsApp:
-(91) 99923-4635
-      `);
+      addBotMessage("Hmm, não consegui processar sua pergunta. Tente novamente ou pergunte de outra forma! 😊");
     }
-
-  } catch(error){
-
-    console.error(error);
-
+  } catch(err){
     hideTyping();
-
-    addBotMessage(`
-⚠️ Erro de conexão.
-
-Tente novamente mais tarde.
-    `);
+    console.error(err);
+    addBotMessage("Sem conexão no momento. 😔 Para ajuda imediata, chame no WhatsApp: **(91) 99923-4635**");
   }
 
   isSending = false;
-
   document.getElementById("chatSend").disabled = false;
 }
-```
-
 
 function obterContextoPagina(){
   const etapa1 = document.getElementById("etapa1");
