@@ -1305,32 +1305,27 @@ async function doConfirm(){
 
 function showSuccess(d){
 const texto =
-`        📚 CONFERÊNCIA DA EBD\n` +
-`      CONFIRMAÇÃO DE INSCRIÇÃO\n` +
+`📚 CONFERÊNCIA DA EBD\n` +
+`CONFIRMAÇÃO DE INSCRIÇÃO\n\n` +
 
+`Prezado(a) ${d.nome},\n\n` +
 
-`✨ Sua inscrição foi confirmada com sucesso!\n\n` +
-
-`Olá, *${d.nome}*.\n` +
-`Seu pagamento foi aprovado e seu acesso à conferência já está garantido.\n\n` +
-
-`━━━  DADOS DA INSCRIÇÃO  ━━━\n\n` +
+`Informamos que o pagamento referente à sua inscrição foi confirmado com sucesso.\n` +
+`Os dados abaixo foram registrados em nosso sistema:\n\n` +
 
 `👤 Participante: ${d.nome}\n` +
 `📞 Telefone: ${d.telefone}\n` +
 `⛪ Congregação: ${d.congregacao}\n` +
 `👥 Grupo: ${d.grupo}\n` +
 `📍 Área: ${d.area}\n` +
-`🆔 Pedido: ${d.orderId}\n\n` +
+`🆔 Número do Pedido: ${d.orderId}\n\n` +
 
-`━━━━━━━━━━━━━━━━━━━\n\n` +
+`Sua participação na Conferência da EBD está oficialmente confirmada.\n\n` +
 
-`🙏 Será uma alegria receber você neste grande encontro de aprendizado, comunhão e crescimento espiritual.\n\n` +
-
-`📌 Guarde esta confirmação para apresentar no credenciamento do evento.\n\n` +
+`Solicitamos que esta confirmação seja mantida para apresentação no credenciamento do evento.\n\n` +
 
 `Atenciosamente,\n` +
-`Secretaria Oficial • Conferência da EBD`;
+`Secretaria Oficial da Conferência da EBD`;
 
   document.getElementById("zapBtn").href = `https://wa.me/${CFG.numeroZap}?text=${encodeURIComponent(texto)}`;
   document.getElementById("orderTag").textContent = `ID: ${d.orderId}`;
