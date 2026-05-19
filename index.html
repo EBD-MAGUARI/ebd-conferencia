@@ -641,531 +641,291 @@ select {
 </div>
 
 <script>
-/* ════════════════════════════════════════════════════════
-   MAIA • ENTERPRISE ASSISTANT SYSTEM
-══════════════════════════════════════════════════════════ */
+/* ════════════════════════════════════════
+   CONFERÊNCIA EBD • SISTEMA DE INSCRIÇÃO
+   Desenvolvido por Kairos Agency
+════════════════════════════════════════ */
 
-class ConferenceApp {
+const APP_CONFIG = Object.freeze({
+  PAYMENT_URL:
+    "https://checkout.infinitepay.io/midian-caldas/1Z7C16LQVb",
 
-  static CONFIG = {
+  API_URL:
+    "https://script.google.com/macros/s/AKfycbyFRrZ9OWl5xkrKh6pLMK8-TpBcIKWqahcGD3_4rA0qbEYrs4zb4wvHsQZO_jW_duLwgA/exec",
 
-    API_URL:
-      "https://script.google.com/macros/s/AKfycbyFRrZ9OWl5xkrKh6pLMK8-TpBcIKWqahcGD3_4rA0qbEYrs4zb4wvHsQZO_jW_duLwgA/exec",
+  WHATSAPP_NUMBER: "5591980208294",
 
-    PAYMENT_URL:
-      "https://checkout.infinitepay.io/midian-caldas/1Z7C16LQVb",
+  STORAGE_KEY: "ebd_inscricao",
 
-    WHATSAPP:
-      "5591980208294"
+  SYSTEM_NAME: "Conferência da EBD"
+});
 
+/* ════════════════════════════════════════
+   ESTADO GLOBAL
+════════════════════════════════════════ */
+
+const AppState = {
+  participante: {},
+  chatAberto: false,
+  carregandoMensagem: false,
+  historicoChat: []
+};
+
+/* ════════════════════════════════════════
+   HELPERS
+════════════════════════════════════════ */
+
+const $ = (selector) => document.querySelector(selector);
+
+const Helpers = {
+  gerarOrderId() {
+    return `EBD-${Date.now()}`;
+  },
+
+  salvarLocal(dados) {
+    sessionStorage.setItem(
+      APP_CONFIG.STORAGE_KEY,
+      JSON.stringify(dados)
+    );
+  },
+
+  carregarLocal() {
+    return JSON.parse(
+      sessionStorage.getItem(APP_CONFIG.STORAGE_KEY) || "{}"
+    );
+  },
+
+  limparLocal() {
+    sessionStorage.removeItem(APP_CONFIG.STORAGE_KEY);
+  },
+
+  scrollTop() {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
+  },
+
+  horaAtual() {
+    return new Date().toLocaleTimeString("pt-BR", {
+      hour: "2-digit",
+      minute: "2-digit"
+    });
+  },
+
+  escapeHtml(texto = "") {
+    return texto
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;");
+  },
+
+  formatarMensagem(texto = "") {
+    return this.escapeHtml(texto)
+      .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+      .replace(/\n/g, "<br>");
+  }
+};
+
+/* ════════════════════════════════════════
+   FORMATAÇÃO TELEFONE
+════════════════════════════════════════ */
+
+$("#telefone").addEventListener("input", (e) => {
+  let valor = e.target.value.replace(/\D/g, "");
+
+  valor = valor.slice(0, 11);
+
+  if (valor.length > 6) {
+    valor = `(${valor.slice(0, 2)}) ${valor.slice(
+      2,
+      7
+    )}-${valor.slice(7)}`;
+  } else if (valor.length > 2) {
+    valor = `(${valor.slice(0, 2)}) ${valor.slice(2)}`;
+  } else if (valor.length > 0) {
+    valor = `(${valor}`;
+  }
+
+  e.target.value = valor;
+});
+
+/* ════════════════════════════════════════
+   FORMULÁRIO PRINCIPAL
+════════════════════════════════════════ */
+
+$("#formDados").addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const mensagem = $("#msgDados");
+  const botao = $("#btnPagar");
+
+  const formData = new FormData(e.target);
+
+  const participante = {
+    nome: formData.get("nome")?.trim(),
+    telefone: formData.get("telefone")?.trim(),
+    congregacao: formData.get("congregacao")?.trim(),
+    grupo: formData.get("grupo")?.trim(),
+    area: formData.get("area"),
+    orderId: Helpers.gerarOrderId()
   };
 
+  const camposObrigatorios = [
+    "nome",
+    "telefone",
+    "congregacao",
+    "grupo",
+    "area"
+  ];
+
+  for (const campo of camposObrigatorios) {
+    if (!participante[campo]) {
+      mensagem.innerHTML = `
+        <div class="alert error">
+          Preencha o campo <strong>${campo}</strong>
+        </div>
+      `;
+      return;
+    }
+  }
+
+  mensagem.innerHTML = "";
+
+  AppState.participante = participante;
+
+  Helpers.salvarLocal(participante);
+
+  window.open(APP_CONFIG.PAYMENT_URL, "_blank");
+
+  botao.disabled = true;
+
+  botao.innerHTML = `
+    <span class="spinner"></span>
+    Pagamento iniciado
+  `;
+
+  $("#aguardandoBox").classList.add("show");
+  $("#btnJaPaguei").classList.add("show");
+});
+
+/* ════════════════════════════════════════
+   CHAT IA PROFISSIONAL
+════════════════════════════════════════ */
+
+class ChatBot {
   constructor() {
-
-    this.state = {
-      participante: {},
-      messages: []
-    };
-
-    this.init();
-
+    this.chat = $("#agenteChat");
+    this.messages = $("#chatMessages");
+    this.input = $("#chatInput");
   }
 
-  /* ───────────────────────────────────── */
-
-  init() {
-
-    this.cacheDOM();
-
-    this.bindEvents();
-
-    this.initializeChat();
-
-  }
-
-  cacheDOM() {
-
-    this.dom = {
-
-      form:
-        document.querySelector("#formDados"),
-
-      telefone:
-        document.querySelector("#telefone"),
-
-      chatInput:
-        document.querySelector("#chatInput"),
-
-      chatMessages:
-        document.querySelector("#chatMessages"),
-
-      sendBtn:
-        document.querySelector("#chatSend")
-
-    };
-
-  }
-
-  bindEvents() {
-
-    /* FORM */
-
-    this.dom.form?.addEventListener(
-      "submit",
-      this.handleSubmit.bind(this)
-    );
-
-    /* PHONE */
-
-    this.dom.telefone?.addEventListener(
-      "input",
-      this.maskPhone.bind(this)
-    );
-
-    /* CHAT */
-
-    this.dom.chatInput?.addEventListener(
-      "keydown",
-      this.handleChatKey.bind(this)
-    );
-
-    this.dom.sendBtn?.addEventListener(
-      "click",
-      () => this.sendMessage()
-    );
-
-  }
-
-  /* ════════════════════════════════════
-     FORM
-  ════════════════════════════════════ */
-
-  async handleSubmit(e) {
-
-    e.preventDefault();
-
-    const fd =
-      new FormData(this.dom.form);
-
-    const participante = {
-
-      nome:
-        fd.get("nome")?.trim(),
-
-      telefone:
-        fd.get("telefone")?.trim(),
-
-      congregacao:
-        fd.get("congregacao")?.trim(),
-
-      grupo:
-        fd.get("grupo")?.trim(),
-
-      area:
-        fd.get("area"),
-
-      orderId:
-        "EBD-" + Date.now()
-
-    };
-
-    const required = [
-
-      "nome",
-      "telefone",
-      "congregacao",
-      "grupo",
-      "area"
-
-    ];
-
-    for(const field of required){
-
-      if(!participante[field]){
-
-        return this.toast(
-          "Preencha todos os campos.",
-          "error"
-        );
-
-      }
-
-    }
-
-    this.state.participante =
-      participante;
-
-    sessionStorage.setItem(
-      "ebd_data",
-      JSON.stringify(participante)
-    );
-
-    window.open(
-      ConferenceApp.CONFIG.PAYMENT_URL,
-      "_blank"
-    );
-
-    this.toast(
-      "Pagamento iniciado.",
-      "success"
-    );
-
-  }
-
-  /* ════════════════════════════════════
-     PHONE MASK
-  ════════════════════════════════════ */
-
-  maskPhone(e) {
-
-    let v =
-      e.target.value.replace(/\D/g,"");
-
-    v = v.slice(0,11);
-
-    if(v.length > 6){
-
-      v =
-        `(${v.slice(0,2)}) ${v.slice(2,7)}-${v.slice(7)}`;
-
-    }
-
-    else if(v.length > 2){
-
-      v =
-        `(${v.slice(0,2)}) ${v.slice(2)}`;
-
-    }
-
-    else if(v.length > 0){
-
-      v = `(${v}`;
-
-    }
-
-    e.target.value = v;
-
-  }
-
-  /* ════════════════════════════════════
-     CHAT
-  ════════════════════════════════════ */
-
-  initializeChat() {
-
+  iniciar() {
     this.addBotMessage(`
+Olá! 👋
 
-👋 Olá!
-
-Eu sou a **Maia**,
-assistente oficial da
+Sou o assistente oficial da
 **Conferência da EBD**.
 
-Estou aqui para ajudar você
-com inscrição, pagamento,
-comprovante e dúvidas. 😊
+Posso ajudar com:
 
+• Inscrição
+• Pagamento
+• Envio de comprovante
+• Informações do evento
+• Suporte geral
     `);
-
   }
 
-  handleChatKey(e) {
-
-    if(
-      e.key === "Enter" &&
-      !e.shiftKey
-    ){
-
-      e.preventDefault();
-
-      this.sendMessage();
-
-    }
-
+  addBotMessage(texto) {
+    this.renderMessage("bot", texto);
   }
 
-  async sendMessage() {
-
-    const input =
-      this.dom.chatInput;
-
-    if(!input) return;
-
-    const text =
-      input.value.trim();
-
-    if(!text) return;
-
-    input.value = "";
-
-    this.addUserMessage(text);
-
-    this.showTyping();
-
-    try {
-
-      const response =
-        await fetch(
-
-          ConferenceApp.CONFIG.API_URL,
-
-          {
-
-            method:"POST",
-
-            headers:{
-              "Content-Type":
-                "text/plain;charset=utf-8"
-            },
-
-            body:JSON.stringify({
-
-              acao:"perguntarIA",
-
-              mensagem:text,
-
-              historico:
-                this.state.messages
-
-            })
-
-          }
-
-        );
-
-      const data =
-        await response.json();
-
-      this.hideTyping();
-
-      if(data?.resposta){
-
-        this.addBotMessage(
-          data.resposta
-        );
-
-      } else {
-
-        this.addBotMessage(`
-Desculpe,
-não consegui responder agora.
-        `);
-
-      }
-
-    } catch(err){
-
-      this.hideTyping();
-
-      this.addBotMessage(`
-
-⚠️ Estou temporariamente offline.
-
-WhatsApp:
-${ConferenceApp.CONFIG.WHATSAPP}
-
-      `);
-
-    }
-
+  addUserMessage(texto) {
+    this.renderMessage("user", texto);
   }
 
-  /* ════════════════════════════════════
-     MESSAGES
-  ════════════════════════════════════ */
+  renderMessage(tipo, texto) {
+    const div = document.createElement("div");
 
-  addBotMessage(text) {
-
-    this.renderMessage({
-      type:"bot",
-      text
-    });
-
-  }
-
-  addUserMessage(text) {
-
-    this.renderMessage({
-      type:"user",
-      text
-    });
-
-  }
-
-  renderMessage({
-    type,
-    text
-  }) {
-
-    if(!this.dom.chatMessages)
-      return;
-
-    const div =
-      document.createElement("div");
-
-    div.className =
-      `chat-message ${type}`;
+    div.className = `msg-row ${tipo}`;
 
     div.innerHTML = `
-
       ${
-        type === "bot"
-        ?
-        `
-        <div class="chat-avatar">
-          <img
-            src="https://i.imgur.com/2WZtOD6.png"
-            alt="Maia"
-          >
-        </div>
-        `
-        :
-        ""
+        tipo === "bot"
+          ? `<div class="bot-avatar">✝️</div>`
+          : ""
       }
 
-      <div class="chat-bubble">
-
-        ${this.formatText(text)}
-
-        <div class="chat-time">
-          ${this.getTime()}
+      <div class="msg-bubble-wrap">
+        <div class="msg-bubble">
+          ${
+            tipo === "bot"
+              ? Helpers.formatarMensagem(texto)
+              : Helpers.escapeHtml(texto)
+          }
         </div>
 
+        <span class="msg-time">
+          ${Helpers.horaAtual()}
+        </span>
       </div>
-
     `;
 
-    this.dom.chatMessages
-      .appendChild(div);
+    this.messages.appendChild(div);
 
-    this.scrollBottom();
-
+    this.messages.scrollTop =
+      this.messages.scrollHeight;
   }
 
-  /* ════════════════════════════════════
-     TYPING
-  ════════════════════════════════════ */
+  mostrarTyping() {
+    const div = document.createElement("div");
 
-  showTyping() {
+    div.id = "typingIndicator";
 
-    const typing =
-      document.createElement("div");
+    div.innerHTML = `
+      <div class="msg-row bot">
+        <div class="bot-avatar">✝️</div>
 
-    typing.id = "typing";
-
-    typing.className =
-      "chat-message bot";
-
-    typing.innerHTML = `
-
-      <div class="chat-avatar">
-        <img
-          src="https://i.imgur.com/2WZtOD6.png"
-        >
+        <div class="msg-bubble">
+          <div class="typing-indicator">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+        </div>
       </div>
-
-      <div class="chat-bubble typing">
-
-        <span></span>
-        <span></span>
-        <span></span>
-
-      </div>
-
     `;
 
-    this.dom.chatMessages
-      ?.appendChild(typing);
-
-    this.scrollBottom();
-
+    this.messages.appendChild(div);
   }
 
-  hideTyping() {
-
-    document
-      .querySelector("#typing")
-      ?.remove();
-
+  esconderTyping() {
+    $("#typingIndicator")?.remove();
   }
-
-  /* ════════════════════════════════════
-     HELPERS
-  ════════════════════════════════════ */
-
-  formatText(text="") {
-
-    return text
-
-      .replace(/\*\*(.*?)\*\*/g,
-        "<strong>$1</strong>"
-      )
-
-      .replace(/\n/g,"<br>");
-
-  }
-
-  getTime() {
-
-    return new Date()
-      .toLocaleTimeString(
-        "pt-BR",
-        {
-          hour:"2-digit",
-          minute:"2-digit"
-        }
-      );
-
-  }
-
-  scrollBottom() {
-
-    this.dom.chatMessages.scrollTop =
-      this.dom.chatMessages.scrollHeight;
-
-  }
-
-  toast(message,type="info") {
-
-    const toast =
-      document.createElement("div");
-
-    toast.className =
-      `toast ${type}`;
-
-    toast.innerHTML = message;
-
-    document.body.appendChild(toast);
-
-    setTimeout(()=>{
-
-      toast.classList.add("show");
-
-    },100);
-
-    setTimeout(()=>{
-
-      toast.remove();
-
-    },4000);
-
-  }
-
 }
 
-/* ════════════════════════════════════════════════════════
-   START
-══════════════════════════════════════════════════════════ */
+const chatBot = new ChatBot();
 
-document.addEventListener(
-  "DOMContentLoaded",
-  () => {
+/* ════════════════════════════════════════
+   CONTROLE DE ETAPAS
+════════════════════════════════════════ */
 
-    window.APP =
-      new ConferenceApp();
+function atualizarEtapa(etapaAtual) {
+  for (let i = 1; i <= 3; i++) {
+    const etapa = $(`#s${i}`);
 
+    etapa.classList.remove("active", "done");
+
+    if (i < etapaAtual) {
+      etapa.classList.add("done");
+    }
+
+    if (i === etapaAtual) {
+      etapa.classList.add("active");
+    }
   }
-);
+}
 </script>
 </body>
 </html>
