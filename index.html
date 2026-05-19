@@ -642,79 +642,42 @@ select {
 
 <script>
 /* ════════════════════════════════════════════════════════
-   KAIROS • ENTERPRISE REGISTRATION EXPERIENCE
-   Conferência EBD • Premium System Architecture
+   MAIA • ENTERPRISE ASSISTANT SYSTEM
 ══════════════════════════════════════════════════════════ */
 
 class ConferenceApp {
 
-  /* ──────────────────────────────────────────
-     CONFIG
-  ────────────────────────────────────────── */
+  static CONFIG = {
 
-  static CONFIG = Object.freeze({
+    API_URL:
+      "https://script.google.com/macros/s/AKfycbyFRrZ9OWl5xkrKh6pLMK8-TpBcIKWqahcGD3_4rA0qbEYrs4zb4wvHsQZO_jW_duLwgA/exec",
 
-    APP_NAME: "Conferência da EBD",
+    PAYMENT_URL:
+      "https://checkout.infinitepay.io/midian-caldas/1Z7C16LQVb",
 
-    VERSION: "3.0 Enterprise",
-
-    API: {
-      BASE_URL:
-        "https://script.google.com/macros/s/AKfycbyFRrZ9OWl5xkrKh6pLMK8-TpBcIKWqahcGD3_4rA0qbEYrs4zb4wvHsQZO_jW_duLwgA/exec",
-
-      TIMEOUT: 15000
-    },
-
-    PAYMENT: {
-      URL:
-        "https://checkout.infinitepay.io/midian-caldas/1Z7C16LQVb"
-    },
-
-    WHATSAPP: {
-      NUMBER: "5591980208294"
-    },
-
-    STORAGE: {
-      KEY: "ebd-enterprise-session"
-    }
-
-  });
-
-  /* ──────────────────────────────────────────
-     APP STATE
-  ────────────────────────────────────────── */
-
-  state = {
-
-    currentStep: 1,
-
-    isUploading: false,
-
-    isChatOpen: false,
-
-    isTyping: false,
-
-    participante: {},
-
-    messages: [],
-
-    uploadProgress: 0
+    WHATSAPP:
+      "5591980208294"
 
   };
 
-  /* ──────────────────────────────────────────
-     INITIALIZATION
-  ────────────────────────────────────────── */
-
   constructor() {
+
+    this.state = {
+      participante: {},
+      messages: []
+    };
+
+    this.init();
+
+  }
+
+  /* ───────────────────────────────────── */
+
+  init() {
 
     this.cacheDOM();
 
     this.bindEvents();
-
-    this.restoreSession();
-
-    this.initializeAnimations();
 
     this.initializeChat();
 
@@ -724,23 +687,20 @@ class ConferenceApp {
 
     this.dom = {
 
-      form: document.querySelector("#formDados"),
+      form:
+        document.querySelector("#formDados"),
 
-      telefone: document.querySelector("#telefone"),
+      telefone:
+        document.querySelector("#telefone"),
 
-      pagarBtn: document.querySelector("#btnPagar"),
+      chatInput:
+        document.querySelector("#chatInput"),
 
-      confirmarBtn: document.querySelector("#btnConfirmar"),
+      chatMessages:
+        document.querySelector("#chatMessages"),
 
-      loadingOverlay: document.querySelector("#loadingOverlay"),
-
-      progressBar: document.querySelector("#uploadProgress"),
-
-      chatInput: document.querySelector("#chatInput"),
-
-      chatMessages: document.querySelector("#chatMessages"),
-
-      chatContainer: document.querySelector("#agenteChat")
+      sendBtn:
+        document.querySelector("#chatSend")
 
     };
 
@@ -752,7 +712,7 @@ class ConferenceApp {
 
     this.dom.form?.addEventListener(
       "submit",
-      this.handleFormSubmit.bind(this)
+      this.handleSubmit.bind(this)
     );
 
     /* PHONE */
@@ -769,513 +729,45 @@ class ConferenceApp {
       this.handleChatKey.bind(this)
     );
 
-    /* DRAG & DROP */
-
-    const uploadArea = document.querySelector(".upload-zone");
-
-    if(uploadArea){
-
-      uploadArea.addEventListener(
-        "dragover",
-        this.handleDragOver.bind(this)
-      );
-
-      uploadArea.addEventListener(
-        "drop",
-        this.handleDrop.bind(this)
-      );
-
-    }
-
-  }
-
-  /* ──────────────────────────────────────────
-     FORM SUBMIT
-  ────────────────────────────────────────── */
-
-  async handleFormSubmit(event) {
-
-    event.preventDefault();
-
-    try {
-
-      this.showLoader(
-        "Validando informações..."
-      );
-
-      const formData = new FormData(event.target);
-
-      const participante = {
-
-        id: this.generateId(),
-
-        nome: this.sanitize(
-          formData.get("nome")
-        ),
-
-        telefone: this.sanitize(
-          formData.get("telefone")
-        ),
-
-        congregacao: this.sanitize(
-          formData.get("congregacao")
-        ),
-
-        grupo: this.sanitize(
-          formData.get("grupo")
-        ),
-
-        area: this.sanitize(
-          formData.get("area")
-        ),
-
-        createdAt: new Date().toISOString(),
-
-        status: "pending_payment"
-
-      };
-
-      this.validateFields(participante);
-
-      this.state.participante = participante;
-
-      this.saveSession();
-
-      this.animateButtonSuccess(
-        this.dom.pagarBtn,
-        "Pagamento iniciado"
-      );
-
-      this.openPayment();
-
-      this.nextStep();
-
-      this.showToast({
-        type: "success",
-        title: "Tudo pronto!",
-        message:
-          "Finalize o pagamento para continuar."
-      });
-
-    } catch(error) {
-
-      this.showToast({
-        type: "error",
-        title: "Erro",
-        message: error.message
-      });
-
-    } finally {
-
-      this.hideLoader();
-
-    }
-
-  }
-
-  /* ──────────────────────────────────────────
-     PAYMENT
-  ────────────────────────────────────────── */
-
-  openPayment() {
-
-    const paymentWindow = window.open(
-      ConferenceApp.CONFIG.PAYMENT.URL,
-      "_blank"
-    );
-
-    if(!paymentWindow){
-
-      this.showToast({
-        type: "warning",
-        title: "Popup bloqueado",
-        message:
-          "Permita popups para continuar."
-      });
-
-    }
-
-  }
-
-  /* ──────────────────────────────────────────
-     FILE UPLOAD
-  ────────────────────────────────────────── */
-
-  async uploadReceipt(file) {
-
-    try {
-
-      this.state.isUploading = true;
-
-      this.showLoader(
-        "Enviando comprovante..."
-      );
-
-      const base64 =
-        await this.convertToBase64(file);
-
-      const payload = {
-
-        action: "UPLOAD_RECEIPT",
-
-        participant:
-          this.state.participante,
-
-        file: {
-
-          name: file.name,
-
-          type: file.type,
-
-          content: base64
-
-        }
-
-      };
-
-      await this.apiRequest(payload);
-
-      this.completeRegistration();
-
-    } catch(error) {
-
-      this.showToast({
-        type: "error",
-        title: "Falha no envio",
-        message:
-          "Tente novamente em alguns segundos."
-      });
-
-    } finally {
-
-      this.state.isUploading = false;
-
-      this.hideLoader();
-
-    }
-
-  }
-
-  /* ──────────────────────────────────────────
-     AI CHAT SYSTEM
-  ────────────────────────────────────────── */
-
-  initializeChat() {
-
-    this.addBotMessage(`
-# 👋 Bem-vindo(a)
-
-Sou o assistente oficial da
-**Conferência da EBD**.
-
-Estou preparado para ajudar com:
-
-• Inscrição
-• Pagamentos
-• Comprovantes
-• Dúvidas do evento
-• Suporte em tempo real
-
-Como posso ajudar você hoje?
-    `);
-
-  }
-
-  async sendMessage(message) {
-
-    if(!message?.trim()) return;
-
-    this.addUserMessage(message);
-
-    this.showTyping();
-
-    try {
-
-      const response =
-        await this.apiRequest({
-
-          action: "CHAT_MESSAGE",
-
-          context:
-            this.getPageContext(),
-
-          history:
-            this.state.messages,
-
-          message
-
-        });
-
-      this.hideTyping();
-
-      this.addBotMessage(
-        response.reply
-      );
-
-    } catch(error) {
-
-      this.hideTyping();
-
-      this.addBotMessage(`
-⚠️ No momento estou indisponível.
-
-Entre em contato pelo WhatsApp:
-+55 91 98020-8294
-      `);
-
-    }
-
-  }
-
-  addBotMessage(content) {
-
-    this.renderMessage({
-      type: "bot",
-      content,
-      avatar: "✝️"
-    });
-
-  }
-
-  addUserMessage(content) {
-
-    this.renderMessage({
-      type: "user",
-      content
-    });
-
-  }
-
-  renderMessage({
-    type,
-    content,
-    avatar = ""
-  }) {
-
-    const message = document.createElement("div");
-
-    message.className =
-      `chat-message ${type}`;
-
-    message.innerHTML = `
-
-      ${
-        type === "bot"
-          ? `
-          <div class="chat-avatar">
-            ${avatar}
-          </div>
-        `
-          : ""
-      }
-
-      <div class="chat-bubble">
-
-        <div class="chat-content">
-          ${this.parseMarkdown(content)}
-        </div>
-
-        <div class="chat-time">
-          ${this.getCurrentTime()}
-        </div>
-
-      </div>
-
-    `;
-
-    this.dom.chatMessages.appendChild(
-      message
-    );
-
-    this.scrollChatBottom();
-
-  }
-
-  /* ──────────────────────────────────────────
-     API LAYER
-  ────────────────────────────────────────── */
-
-  async apiRequest(payload) {
-
-    const controller =
-      new AbortController();
-
-    const timeout = setTimeout(() => {
-
-      controller.abort();
-
-    }, ConferenceApp.CONFIG.API.TIMEOUT);
-
-    try {
-
-      const response = await fetch(
-
-        ConferenceApp.CONFIG.API.BASE_URL,
-
-        {
-
-          method: "POST",
-
-          headers: {
-
-            "Content-Type":
-              "application/json",
-
-            "X-App-Version":
-              ConferenceApp.CONFIG.VERSION
-
-          },
-
-          body: JSON.stringify(payload),
-
-          signal: controller.signal
-
-        }
-
-      );
-
-      clearTimeout(timeout);
-
-      if(!response.ok){
-
-        throw new Error(
-          "Falha na comunicação"
-        );
-
-      }
-
-      return await response.json();
-
-    } catch(error) {
-
-      throw error;
-
-    }
-
-  }
-
-  /* ──────────────────────────────────────────
-     UI SYSTEM
-  ────────────────────────────────────────── */
-
-  showLoader(message = "Carregando...") {
-
-    if(!this.dom.loadingOverlay) return;
-
-    this.dom.loadingOverlay.classList.add(
-      "active"
-    );
-
-    this.dom.loadingOverlay.innerHTML = `
-
-      <div class="premium-loader">
-
-        <div class="loader-ring"></div>
-
-        <div class="loader-text">
-          ${message}
-        </div>
-
-      </div>
-
-    `;
-
-  }
-
-  hideLoader() {
-
-    this.dom.loadingOverlay?.classList.remove(
-      "active"
+    this.dom.sendBtn?.addEventListener(
+      "click",
+      () => this.sendMessage()
     );
 
   }
 
-  showToast({
-    type = "info",
-    title = "",
-    message = ""
-  }) {
+  /* ════════════════════════════════════
+     FORM
+  ════════════════════════════════════ */
 
-    const toast = document.createElement(
-      "div"
-    );
+  async handleSubmit(e) {
 
-    toast.className =
-      `toast toast-${type}`;
+    e.preventDefault();
 
-    toast.innerHTML = `
+    const fd =
+      new FormData(this.dom.form);
 
-      <div class="toast-content">
+    const participante = {
 
-        <div class="toast-title">
-          ${title}
-        </div>
+      nome:
+        fd.get("nome")?.trim(),
 
-        <div class="toast-message">
-          ${message}
-        </div>
+      telefone:
+        fd.get("telefone")?.trim(),
 
-      </div>
+      congregacao:
+        fd.get("congregacao")?.trim(),
 
-    `;
+      grupo:
+        fd.get("grupo")?.trim(),
 
-    document.body.appendChild(toast);
+      area:
+        fd.get("area"),
 
-    setTimeout(() => {
+      orderId:
+        "EBD-" + Date.now()
 
-      toast.classList.add("show");
-
-    }, 100);
-
-    setTimeout(() => {
-
-      toast.classList.remove("show");
-
-      setTimeout(() => toast.remove(), 400);
-
-    }, 5000);
-
-  }
-
-  animateButtonSuccess(button, text) {
-
-    if(!button) return;
-
-    button.disabled = true;
-
-    button.classList.add("success");
-
-    button.innerHTML = `
-
-      <svg class="success-icon">
-        <path d="M20 6L9 17L4 12"/>
-      </svg>
-
-      ${text}
-
-    `;
-
-  }
-
-  /* ──────────────────────────────────────────
-     HELPERS
-  ────────────────────────────────────────── */
-
-  generateId() {
-
-    return `EBD-${crypto.randomUUID()}`;
-
-  }
-
-  sanitize(value = "") {
-
-    return value
-      .trim()
-      .replace(/[<>]/g, "");
-
-  }
-
-  validateFields(data) {
+    };
 
     const required = [
 
@@ -1289,53 +781,319 @@ Entre em contato pelo WhatsApp:
 
     for(const field of required){
 
-      if(!data[field]){
+      if(!participante[field]){
 
-        throw new Error(
-          `Campo obrigatório: ${field}`
+        return this.toast(
+          "Preencha todos os campos.",
+          "error"
         );
 
       }
 
     }
 
-  }
+    this.state.participante =
+      participante;
 
-  convertToBase64(file) {
+    sessionStorage.setItem(
+      "ebd_data",
+      JSON.stringify(participante)
+    );
 
-    return new Promise((resolve, reject) => {
+    window.open(
+      ConferenceApp.CONFIG.PAYMENT_URL,
+      "_blank"
+    );
 
-      const reader = new FileReader();
-
-      reader.onload = () => {
-
-        resolve(
-          reader.result.split(",")[1]
-        );
-
-      };
-
-      reader.onerror = reject;
-
-      reader.readAsDataURL(file);
-
-    });
-
-  }
-
-  getCurrentTime() {
-
-    return new Date().toLocaleTimeString(
-      "pt-BR",
-      {
-        hour: "2-digit",
-        minute: "2-digit"
-      }
+    this.toast(
+      "Pagamento iniciado.",
+      "success"
     );
 
   }
 
-  parseMarkdown(text = "") {
+  /* ════════════════════════════════════
+     PHONE MASK
+  ════════════════════════════════════ */
+
+  maskPhone(e) {
+
+    let v =
+      e.target.value.replace(/\D/g,"");
+
+    v = v.slice(0,11);
+
+    if(v.length > 6){
+
+      v =
+        `(${v.slice(0,2)}) ${v.slice(2,7)}-${v.slice(7)}`;
+
+    }
+
+    else if(v.length > 2){
+
+      v =
+        `(${v.slice(0,2)}) ${v.slice(2)}`;
+
+    }
+
+    else if(v.length > 0){
+
+      v = `(${v}`;
+
+    }
+
+    e.target.value = v;
+
+  }
+
+  /* ════════════════════════════════════
+     CHAT
+  ════════════════════════════════════ */
+
+  initializeChat() {
+
+    this.addBotMessage(`
+
+👋 Olá!
+
+Eu sou a **Maia**,
+assistente oficial da
+**Conferência da EBD**.
+
+Estou aqui para ajudar você
+com inscrição, pagamento,
+comprovante e dúvidas. 😊
+
+    `);
+
+  }
+
+  handleChatKey(e) {
+
+    if(
+      e.key === "Enter" &&
+      !e.shiftKey
+    ){
+
+      e.preventDefault();
+
+      this.sendMessage();
+
+    }
+
+  }
+
+  async sendMessage() {
+
+    const input =
+      this.dom.chatInput;
+
+    if(!input) return;
+
+    const text =
+      input.value.trim();
+
+    if(!text) return;
+
+    input.value = "";
+
+    this.addUserMessage(text);
+
+    this.showTyping();
+
+    try {
+
+      const response =
+        await fetch(
+
+          ConferenceApp.CONFIG.API_URL,
+
+          {
+
+            method:"POST",
+
+            headers:{
+              "Content-Type":
+                "text/plain;charset=utf-8"
+            },
+
+            body:JSON.stringify({
+
+              acao:"perguntarIA",
+
+              mensagem:text,
+
+              historico:
+                this.state.messages
+
+            })
+
+          }
+
+        );
+
+      const data =
+        await response.json();
+
+      this.hideTyping();
+
+      if(data?.resposta){
+
+        this.addBotMessage(
+          data.resposta
+        );
+
+      } else {
+
+        this.addBotMessage(`
+Desculpe,
+não consegui responder agora.
+        `);
+
+      }
+
+    } catch(err){
+
+      this.hideTyping();
+
+      this.addBotMessage(`
+
+⚠️ Estou temporariamente offline.
+
+WhatsApp:
+${ConferenceApp.CONFIG.WHATSAPP}
+
+      `);
+
+    }
+
+  }
+
+  /* ════════════════════════════════════
+     MESSAGES
+  ════════════════════════════════════ */
+
+  addBotMessage(text) {
+
+    this.renderMessage({
+      type:"bot",
+      text
+    });
+
+  }
+
+  addUserMessage(text) {
+
+    this.renderMessage({
+      type:"user",
+      text
+    });
+
+  }
+
+  renderMessage({
+    type,
+    text
+  }) {
+
+    if(!this.dom.chatMessages)
+      return;
+
+    const div =
+      document.createElement("div");
+
+    div.className =
+      `chat-message ${type}`;
+
+    div.innerHTML = `
+
+      ${
+        type === "bot"
+        ?
+        `
+        <div class="chat-avatar">
+          <img
+            src="https://i.imgur.com/2WZtOD6.png"
+            alt="Maia"
+          >
+        </div>
+        `
+        :
+        ""
+      }
+
+      <div class="chat-bubble">
+
+        ${this.formatText(text)}
+
+        <div class="chat-time">
+          ${this.getTime()}
+        </div>
+
+      </div>
+
+    `;
+
+    this.dom.chatMessages
+      .appendChild(div);
+
+    this.scrollBottom();
+
+  }
+
+  /* ════════════════════════════════════
+     TYPING
+  ════════════════════════════════════ */
+
+  showTyping() {
+
+    const typing =
+      document.createElement("div");
+
+    typing.id = "typing";
+
+    typing.className =
+      "chat-message bot";
+
+    typing.innerHTML = `
+
+      <div class="chat-avatar">
+        <img
+          src="https://i.imgur.com/2WZtOD6.png"
+        >
+      </div>
+
+      <div class="chat-bubble typing">
+
+        <span></span>
+        <span></span>
+        <span></span>
+
+      </div>
+
+    `;
+
+    this.dom.chatMessages
+      ?.appendChild(typing);
+
+    this.scrollBottom();
+
+  }
+
+  hideTyping() {
+
+    document
+      .querySelector("#typing")
+      ?.remove();
+
+  }
+
+  /* ════════════════════════════════════
+     HELPERS
+  ════════════════════════════════════ */
+
+  formatText(text="") {
 
     return text
 
@@ -1343,111 +1101,70 @@ Entre em contato pelo WhatsApp:
         "<strong>$1</strong>"
       )
 
-      .replace(/\n/g, "<br>");
+      .replace(/\n/g,"<br>");
 
   }
 
-  saveSession() {
+  getTime() {
 
-    sessionStorage.setItem(
-
-      ConferenceApp.CONFIG.STORAGE.KEY,
-
-      JSON.stringify(this.state)
-
-    );
-
-  }
-
-  restoreSession() {
-
-    const saved =
-      sessionStorage.getItem(
-
-        ConferenceApp.CONFIG.STORAGE.KEY
+    return new Date()
+      .toLocaleTimeString(
+        "pt-BR",
+        {
+          hour:"2-digit",
+          minute:"2-digit"
+        }
       );
 
-    if(saved){
-
-      this.state = JSON.parse(saved);
-
-    }
-
   }
 
-  nextStep() {
-
-    this.state.currentStep++;
-
-    this.updateStepper();
-
-  }
-
-  updateStepper() {
-
-    document
-      .querySelectorAll(".step")
-      .forEach((step, index) => {
-
-        step.classList.remove(
-          "active",
-          "completed"
-        );
-
-        const number = index + 1;
-
-        if(number < this.state.currentStep){
-
-          step.classList.add(
-            "completed"
-          );
-
-        }
-
-        if(number === this.state.currentStep){
-
-          step.classList.add(
-            "active"
-          );
-
-        }
-
-      });
-
-  }
-
-  scrollChatBottom() {
+  scrollBottom() {
 
     this.dom.chatMessages.scrollTop =
       this.dom.chatMessages.scrollHeight;
 
   }
 
-  initializeAnimations() {
+  toast(message,type="info") {
 
-    document.body.classList.add(
-      "app-loaded"
-    );
+    const toast =
+      document.createElement("div");
+
+    toast.className =
+      `toast ${type}`;
+
+    toast.innerHTML = message;
+
+    document.body.appendChild(toast);
+
+    setTimeout(()=>{
+
+      toast.classList.add("show");
+
+    },100);
+
+    setTimeout(()=>{
+
+      toast.remove();
+
+    },4000);
 
   }
 
 }
 
 /* ════════════════════════════════════════════════════════
-   START APPLICATION
+   START
 ══════════════════════════════════════════════════════════ */
 
 document.addEventListener(
-
   "DOMContentLoaded",
-
   () => {
 
-    window.EBD_APP =
+    window.APP =
       new ConferenceApp();
 
   }
-
 );
 </script>
 </body>
