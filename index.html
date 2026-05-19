@@ -644,8 +644,8 @@ select {
 /* ═══════════ CONFIG CORRIGIDA ═══════════ */
 const CONFIG = {
   urlPagamento: "https://checkout.infinitepay.io/midian-caldas/1Z7C16LQVb",
-  urlScript: "https://script.google.com/macros/s/AKfycbyftrXgW1G8l-MUF7jJqngN24RB589ROiHHF9j0L7BfKBfXHdKY3bu5OyCzEqX73VI2ug/exec",
-  numeroZap: "5591980208294" // Centralizado para uso em todo o script
+  urlScript: "https://script.google.com/macros/s/AKfycbzKdHQy-TaRGXYC9yxbJoLKqIYX017zEiBNGLI9xY1VlZWJL0vNqtd8eeq76Y5vY-g_PQ/exec",
+  numeroZap: "5591992346353" // Centralizado para uso em todas as mensagens do sistema
 };
 
 let dadosParticipante = {};
@@ -730,7 +730,13 @@ async function confirmarInscricao(){
   const reader = new FileReader();
   reader.onload = async function(){
     const base64 = reader.result.split(",")[1];
-    const payload = { ...dadosParticipante, acao: "salvarInscricao", arquivoBase64: base64, arquivoNome: file.name, arquivoMime: file.type };
+    const payload = { 
+      ...dadosParticipante, 
+      acao: "salvarInscricao", // Informa ao Apps Script que este payload é o formulário de cadastro
+      arquivoBase64: base64, 
+      arquivoNome: file.name, 
+      arquivoMime: file.type 
+    };
     try{
       await fetch(CONFIG.urlScript, { method:"POST", mode:"no-cors", headers:{"Content-Type":"application/json"}, body:JSON.stringify(payload) });
       try{ sessionStorage.removeItem("inscricao_dados"); }catch(_){}
@@ -773,7 +779,7 @@ function setStep(n){
 }
 
 /* ═══════════════════════════════════════════════════
-   AGENTE IA (CORRIGIDO)
+   AGENTE IA CHAT (CORRIGIDO PARA SCRIPT INTERNO)
 ═══════════════════════════════════════════════════ */
 let chatOpen   = false;
 let chatHistory = [];
@@ -783,7 +789,7 @@ let tooltipTimer = null;
 // Tooltip inicial
 setTimeout(() => {
   const t = document.getElementById("fabTooltip");
-  if(t){
+  if(t) {
     t.style.display = "block";
     tooltipTimer = setTimeout(() => { t.style.display = "none"; }, 5000);
   }
@@ -897,7 +903,7 @@ async function sendMessage(){
 
   input.value = ""; input.style.height = "auto";
   
-  // Renderiza a mensagem na tela do usuário imediatamente
+  // Renderiza o balão do usuário na interface de forma imediata
   addUserMessage(text);
 
   isSending = true;
@@ -907,7 +913,7 @@ async function sendMessage(){
   const paginaInfo = obterContextoPagina();
 
   try{
-    // Prepara o payload para enviar ao Google Apps Script com a ação específica para o Chat
+    // Constrói o payload estruturado contendo a ação explícita e o histórico limpo
     const payloadChat = {
       acao: "perguntarIA",
       historico: chatHistory,
@@ -915,9 +921,10 @@ async function sendMessage(){
       mensagem: text
     };
 
+    // Realiza a requisição ao Apps Script evitando preflight CORS (usando text/plain)
     const resp = await fetch(CONFIG.urlScript, {
       method: "POST",
-      headers: { "Content-Type": "text/plain;charset=utf-8" }, // Evita problemas de preflight/CORS no Apps Script
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
       body: JSON.stringify(payloadChat)
     });
 
@@ -926,11 +933,11 @@ async function sendMessage(){
 
     if(data && data.resposta){
       addBotMessage(data.resposta);
-      // Atualiza o histórico local original apenas após o sucesso
+      // Salva no histórico local ordenado apenas após a confirmação do sucesso da API
       chatHistory.push({ role: "user", content: text });
       chatHistory.push({ role: "assistant", content: data.resposta });
     } else {
-      addBotMessage(`Desculpe, não consegui processar. Caso o problema persista, fale conosco no WhatsApp: **${CONFIG.numeroZap}**`);
+      addBotMessage(`Desculpe, houve um problema técnico. 😅 Para dúvidas urgentes, entre em contato pelo WhatsApp: **${CONFIG.numeroZap}**`);
     }
   } catch(err){
     hideTyping();
