@@ -641,322 +641,814 @@ select {
 </div>
 
 <script>
-/* ════════════════════════════════════════
-   KAIROS PREMIUM UI SYSTEM
-════════════════════════════════════════ */
+/* ════════════════════════════════════════════════════════
+   KAIROS • ENTERPRISE REGISTRATION EXPERIENCE
+   Conferência EBD • Premium System Architecture
+══════════════════════════════════════════════════════════ */
 
-:root{
+class ConferenceApp {
 
-  --primary:#2563eb;
-  --primary-light:#3b82f6;
-  --secondary:#0f172a;
+  /* ──────────────────────────────────────────
+     CONFIG
+  ────────────────────────────────────────── */
 
-  --success:#16a34a;
-  --danger:#dc2626;
-  --warning:#f59e0b;
+  static CONFIG = Object.freeze({
 
-  --text:#0f172a;
-  --text-soft:#64748b;
+    APP_NAME: "Conferência da EBD",
 
-  --border:rgba(255,255,255,.12);
+    VERSION: "3.0 Enterprise",
 
-  --glass:
-    rgba(255,255,255,.72);
+    API: {
+      BASE_URL:
+        "https://script.google.com/macros/s/AKfycbyFRrZ9OWl5xkrKh6pLMK8-TpBcIKWqahcGD3_4rA0qbEYrs4zb4wvHsQZO_jW_duLwgA/exec",
 
-  --shadow-lg:
-    0 25px 60px rgba(15,23,42,.18);
+      TIMEOUT: 15000
+    },
 
-  --radius-xl:28px;
-  --radius-lg:22px;
+    PAYMENT: {
+      URL:
+        "https://checkout.infinitepay.io/midian-caldas/1Z7C16LQVb"
+    },
 
-}
+    WHATSAPP: {
+      NUMBER: "5591980208294"
+    },
 
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-}
+    STORAGE: {
+      KEY: "ebd-enterprise-session"
+    }
 
-body{
+  });
 
-  font-family:
-    "Inter",
-    sans-serif;
+  /* ──────────────────────────────────────────
+     APP STATE
+  ────────────────────────────────────────── */
 
-  background:
-    radial-gradient(
-      circle at top right,
-      #2563eb15,
-      transparent 30%
-    ),
+  state = {
 
-    radial-gradient(
-      circle at bottom left,
-      #7c3aed12,
-      transparent 30%
-    ),
+    currentStep: 1,
 
-    #f8fafc;
+    isUploading: false,
 
-  min-height:100vh;
+    isChatOpen: false,
 
-  color:var(--text);
+    isTyping: false,
 
-  overflow-x:hidden;
+    participante: {},
 
-}
+    messages: [],
 
-/* ════════════════════════════════════════
-   GLASS CARD
-════════════════════════════════════════ */
+    uploadProgress: 0
 
-.glass-card{
+  };
 
-  background:var(--glass);
+  /* ──────────────────────────────────────────
+     INITIALIZATION
+  ────────────────────────────────────────── */
 
-  backdrop-filter:blur(20px);
+  constructor() {
 
-  border:
-    1px solid var(--border);
+    this.cacheDOM();
 
-  border-radius:var(--radius-xl);
+    this.bindEvents();
 
-  box-shadow:var(--shadow-lg);
+    this.restoreSession();
 
-  padding:42px;
+    this.initializeAnimations();
 
-}
+    this.initializeChat();
 
-/* ════════════════════════════════════════
-   PREMIUM BUTTON
-════════════════════════════════════════ */
+  }
 
-.btn-premium{
+  cacheDOM() {
 
-  position:relative;
+    this.dom = {
 
-  overflow:hidden;
+      form: document.querySelector("#formDados"),
 
-  border:none;
+      telefone: document.querySelector("#telefone"),
 
-  border-radius:18px;
+      pagarBtn: document.querySelector("#btnPagar"),
 
-  padding:18px 26px;
+      confirmarBtn: document.querySelector("#btnConfirmar"),
 
-  font-size:15px;
+      loadingOverlay: document.querySelector("#loadingOverlay"),
 
-  font-weight:700;
+      progressBar: document.querySelector("#uploadProgress"),
 
-  color:#fff;
+      chatInput: document.querySelector("#chatInput"),
 
-  cursor:pointer;
+      chatMessages: document.querySelector("#chatMessages"),
 
-  background:
-    linear-gradient(
-      135deg,
-      var(--primary),
-      var(--primary-light)
+      chatContainer: document.querySelector("#agenteChat")
+
+    };
+
+  }
+
+  bindEvents() {
+
+    /* FORM */
+
+    this.dom.form?.addEventListener(
+      "submit",
+      this.handleFormSubmit.bind(this)
     );
 
-  transition:
-    transform .25s ease,
-    box-shadow .25s ease;
+    /* PHONE */
 
-}
-
-.btn-premium:hover{
-
-  transform:translateY(-3px);
-
-  box-shadow:
-    0 18px 35px
-    rgba(37,99,235,.28);
-
-}
-
-/* ════════════════════════════════════════
-   CHAT SYSTEM
-════════════════════════════════════════ */
-
-.chat-container{
-
-  position:fixed;
-
-  right:24px;
-
-  bottom:100px;
-
-  width:390px;
-
-  height:720px;
-
-  border-radius:32px;
-
-  overflow:hidden;
-
-  backdrop-filter:blur(24px);
-
-  background:
-    rgba(255,255,255,.78);
-
-  border:
-    1px solid rgba(255,255,255,.3);
-
-  box-shadow:
-    0 30px 70px rgba(15,23,42,.22);
-
-}
-
-.chat-header{
-
-  padding:22px;
-
-  background:
-    linear-gradient(
-      135deg,
-      #2563eb,
-      #1d4ed8
+    this.dom.telefone?.addEventListener(
+      "input",
+      this.maskPhone.bind(this)
     );
 
-  color:#fff;
+    /* CHAT */
 
-}
-
-.chat-message{
-
-  display:flex;
-
-  gap:12px;
-
-  padding:18px;
-
-  animation:
-    fadeUp .35s ease;
-
-}
-
-.chat-bubble{
-
-  max-width:82%;
-
-  border-radius:24px;
-
-  padding:18px;
-
-  background:#fff;
-
-  box-shadow:
-    0 8px 24px rgba(15,23,42,.08);
-
-}
-
-.chat-message.user{
-
-  justify-content:flex-end;
-
-}
-
-.chat-message.user .chat-bubble{
-
-  background:
-    linear-gradient(
-      135deg,
-      #2563eb,
-      #1d4ed8
+    this.dom.chatInput?.addEventListener(
+      "keydown",
+      this.handleChatKey.bind(this)
     );
 
-  color:#fff;
+    /* DRAG & DROP */
 
-}
+    const uploadArea = document.querySelector(".upload-zone");
 
-/* ════════════════════════════════════════
-   LOADER
-════════════════════════════════════════ */
+    if(uploadArea){
 
-#loadingOverlay{
+      uploadArea.addEventListener(
+        "dragover",
+        this.handleDragOver.bind(this)
+      );
 
-  position:fixed;
+      uploadArea.addEventListener(
+        "drop",
+        this.handleDrop.bind(this)
+      );
 
-  inset:0;
+    }
 
-  background:
-    rgba(15,23,42,.55);
+  }
 
-  backdrop-filter:blur(10px);
+  /* ──────────────────────────────────────────
+     FORM SUBMIT
+  ────────────────────────────────────────── */
 
-  display:flex;
+  async handleFormSubmit(event) {
 
-  align-items:center;
+    event.preventDefault();
 
-  justify-content:center;
+    try {
 
-  z-index:9999;
+      this.showLoader(
+        "Validando informações..."
+      );
 
-  opacity:0;
+      const formData = new FormData(event.target);
 
-  visibility:hidden;
+      const participante = {
 
-  transition:.3s;
+        id: this.generateId(),
 
-}
+        nome: this.sanitize(
+          formData.get("nome")
+        ),
 
-#loadingOverlay.active{
+        telefone: this.sanitize(
+          formData.get("telefone")
+        ),
 
-  opacity:1;
+        congregacao: this.sanitize(
+          formData.get("congregacao")
+        ),
 
-  visibility:visible;
+        grupo: this.sanitize(
+          formData.get("grupo")
+        ),
 
-}
+        area: this.sanitize(
+          formData.get("area")
+        ),
 
-.premium-loader{
+        createdAt: new Date().toISOString(),
 
-  text-align:center;
+        status: "pending_payment"
 
-  color:#fff;
+      };
 
-}
+      this.validateFields(participante);
 
-.loader-ring{
+      this.state.participante = participante;
 
-  width:72px;
-  height:72px;
+      this.saveSession();
 
-  border-radius:50%;
+      this.animateButtonSuccess(
+        this.dom.pagarBtn,
+        "Pagamento iniciado"
+      );
 
-  border:
-    4px solid rgba(255,255,255,.2);
+      this.openPayment();
 
-  border-top:
-    4px solid #fff;
+      this.nextStep();
 
-  animation:
-    spin 1s linear infinite;
+      this.showToast({
+        type: "success",
+        title: "Tudo pronto!",
+        message:
+          "Finalize o pagamento para continuar."
+      });
 
-  margin:auto auto 20px;
+    } catch(error) {
 
-}
+      this.showToast({
+        type: "error",
+        title: "Erro",
+        message: error.message
+      });
 
-@keyframes spin{
+    } finally {
 
-  to{
-    transform:rotate(360deg);
+      this.hideLoader();
+
+    }
+
+  }
+
+  /* ──────────────────────────────────────────
+     PAYMENT
+  ────────────────────────────────────────── */
+
+  openPayment() {
+
+    const paymentWindow = window.open(
+      ConferenceApp.CONFIG.PAYMENT.URL,
+      "_blank"
+    );
+
+    if(!paymentWindow){
+
+      this.showToast({
+        type: "warning",
+        title: "Popup bloqueado",
+        message:
+          "Permita popups para continuar."
+      });
+
+    }
+
+  }
+
+  /* ──────────────────────────────────────────
+     FILE UPLOAD
+  ────────────────────────────────────────── */
+
+  async uploadReceipt(file) {
+
+    try {
+
+      this.state.isUploading = true;
+
+      this.showLoader(
+        "Enviando comprovante..."
+      );
+
+      const base64 =
+        await this.convertToBase64(file);
+
+      const payload = {
+
+        action: "UPLOAD_RECEIPT",
+
+        participant:
+          this.state.participante,
+
+        file: {
+
+          name: file.name,
+
+          type: file.type,
+
+          content: base64
+
+        }
+
+      };
+
+      await this.apiRequest(payload);
+
+      this.completeRegistration();
+
+    } catch(error) {
+
+      this.showToast({
+        type: "error",
+        title: "Falha no envio",
+        message:
+          "Tente novamente em alguns segundos."
+      });
+
+    } finally {
+
+      this.state.isUploading = false;
+
+      this.hideLoader();
+
+    }
+
+  }
+
+  /* ──────────────────────────────────────────
+     AI CHAT SYSTEM
+  ────────────────────────────────────────── */
+
+  initializeChat() {
+
+    this.addBotMessage(`
+# 👋 Bem-vindo(a)
+
+Sou o assistente oficial da
+**Conferência da EBD**.
+
+Estou preparado para ajudar com:
+
+• Inscrição
+• Pagamentos
+• Comprovantes
+• Dúvidas do evento
+• Suporte em tempo real
+
+Como posso ajudar você hoje?
+    `);
+
+  }
+
+  async sendMessage(message) {
+
+    if(!message?.trim()) return;
+
+    this.addUserMessage(message);
+
+    this.showTyping();
+
+    try {
+
+      const response =
+        await this.apiRequest({
+
+          action: "CHAT_MESSAGE",
+
+          context:
+            this.getPageContext(),
+
+          history:
+            this.state.messages,
+
+          message
+
+        });
+
+      this.hideTyping();
+
+      this.addBotMessage(
+        response.reply
+      );
+
+    } catch(error) {
+
+      this.hideTyping();
+
+      this.addBotMessage(`
+⚠️ No momento estou indisponível.
+
+Entre em contato pelo WhatsApp:
++55 91 98020-8294
+      `);
+
+    }
+
+  }
+
+  addBotMessage(content) {
+
+    this.renderMessage({
+      type: "bot",
+      content,
+      avatar: "✝️"
+    });
+
+  }
+
+  addUserMessage(content) {
+
+    this.renderMessage({
+      type: "user",
+      content
+    });
+
+  }
+
+  renderMessage({
+    type,
+    content,
+    avatar = ""
+  }) {
+
+    const message = document.createElement("div");
+
+    message.className =
+      `chat-message ${type}`;
+
+    message.innerHTML = `
+
+      ${
+        type === "bot"
+          ? `
+          <div class="chat-avatar">
+            ${avatar}
+          </div>
+        `
+          : ""
+      }
+
+      <div class="chat-bubble">
+
+        <div class="chat-content">
+          ${this.parseMarkdown(content)}
+        </div>
+
+        <div class="chat-time">
+          ${this.getCurrentTime()}
+        </div>
+
+      </div>
+
+    `;
+
+    this.dom.chatMessages.appendChild(
+      message
+    );
+
+    this.scrollChatBottom();
+
+  }
+
+  /* ──────────────────────────────────────────
+     API LAYER
+  ────────────────────────────────────────── */
+
+  async apiRequest(payload) {
+
+    const controller =
+      new AbortController();
+
+    const timeout = setTimeout(() => {
+
+      controller.abort();
+
+    }, ConferenceApp.CONFIG.API.TIMEOUT);
+
+    try {
+
+      const response = await fetch(
+
+        ConferenceApp.CONFIG.API.BASE_URL,
+
+        {
+
+          method: "POST",
+
+          headers: {
+
+            "Content-Type":
+              "application/json",
+
+            "X-App-Version":
+              ConferenceApp.CONFIG.VERSION
+
+          },
+
+          body: JSON.stringify(payload),
+
+          signal: controller.signal
+
+        }
+
+      );
+
+      clearTimeout(timeout);
+
+      if(!response.ok){
+
+        throw new Error(
+          "Falha na comunicação"
+        );
+
+      }
+
+      return await response.json();
+
+    } catch(error) {
+
+      throw error;
+
+    }
+
+  }
+
+  /* ──────────────────────────────────────────
+     UI SYSTEM
+  ────────────────────────────────────────── */
+
+  showLoader(message = "Carregando...") {
+
+    if(!this.dom.loadingOverlay) return;
+
+    this.dom.loadingOverlay.classList.add(
+      "active"
+    );
+
+    this.dom.loadingOverlay.innerHTML = `
+
+      <div class="premium-loader">
+
+        <div class="loader-ring"></div>
+
+        <div class="loader-text">
+          ${message}
+        </div>
+
+      </div>
+
+    `;
+
+  }
+
+  hideLoader() {
+
+    this.dom.loadingOverlay?.classList.remove(
+      "active"
+    );
+
+  }
+
+  showToast({
+    type = "info",
+    title = "",
+    message = ""
+  }) {
+
+    const toast = document.createElement(
+      "div"
+    );
+
+    toast.className =
+      `toast toast-${type}`;
+
+    toast.innerHTML = `
+
+      <div class="toast-content">
+
+        <div class="toast-title">
+          ${title}
+        </div>
+
+        <div class="toast-message">
+          ${message}
+        </div>
+
+      </div>
+
+    `;
+
+    document.body.appendChild(toast);
+
+    setTimeout(() => {
+
+      toast.classList.add("show");
+
+    }, 100);
+
+    setTimeout(() => {
+
+      toast.classList.remove("show");
+
+      setTimeout(() => toast.remove(), 400);
+
+    }, 5000);
+
+  }
+
+  animateButtonSuccess(button, text) {
+
+    if(!button) return;
+
+    button.disabled = true;
+
+    button.classList.add("success");
+
+    button.innerHTML = `
+
+      <svg class="success-icon">
+        <path d="M20 6L9 17L4 12"/>
+      </svg>
+
+      ${text}
+
+    `;
+
+  }
+
+  /* ──────────────────────────────────────────
+     HELPERS
+  ────────────────────────────────────────── */
+
+  generateId() {
+
+    return `EBD-${crypto.randomUUID()}`;
+
+  }
+
+  sanitize(value = "") {
+
+    return value
+      .trim()
+      .replace(/[<>]/g, "");
+
+  }
+
+  validateFields(data) {
+
+    const required = [
+
+      "nome",
+      "telefone",
+      "congregacao",
+      "grupo",
+      "area"
+
+    ];
+
+    for(const field of required){
+
+      if(!data[field]){
+
+        throw new Error(
+          `Campo obrigatório: ${field}`
+        );
+
+      }
+
+    }
+
+  }
+
+  convertToBase64(file) {
+
+    return new Promise((resolve, reject) => {
+
+      const reader = new FileReader();
+
+      reader.onload = () => {
+
+        resolve(
+          reader.result.split(",")[1]
+        );
+
+      };
+
+      reader.onerror = reject;
+
+      reader.readAsDataURL(file);
+
+    });
+
+  }
+
+  getCurrentTime() {
+
+    return new Date().toLocaleTimeString(
+      "pt-BR",
+      {
+        hour: "2-digit",
+        minute: "2-digit"
+      }
+    );
+
+  }
+
+  parseMarkdown(text = "") {
+
+    return text
+
+      .replace(/\*\*(.*?)\*\*/g,
+        "<strong>$1</strong>"
+      )
+
+      .replace(/\n/g, "<br>");
+
+  }
+
+  saveSession() {
+
+    sessionStorage.setItem(
+
+      ConferenceApp.CONFIG.STORAGE.KEY,
+
+      JSON.stringify(this.state)
+
+    );
+
+  }
+
+  restoreSession() {
+
+    const saved =
+      sessionStorage.getItem(
+
+        ConferenceApp.CONFIG.STORAGE.KEY
+      );
+
+    if(saved){
+
+      this.state = JSON.parse(saved);
+
+    }
+
+  }
+
+  nextStep() {
+
+    this.state.currentStep++;
+
+    this.updateStepper();
+
+  }
+
+  updateStepper() {
+
+    document
+      .querySelectorAll(".step")
+      .forEach((step, index) => {
+
+        step.classList.remove(
+          "active",
+          "completed"
+        );
+
+        const number = index + 1;
+
+        if(number < this.state.currentStep){
+
+          step.classList.add(
+            "completed"
+          );
+
+        }
+
+        if(number === this.state.currentStep){
+
+          step.classList.add(
+            "active"
+          );
+
+        }
+
+      });
+
+  }
+
+  scrollChatBottom() {
+
+    this.dom.chatMessages.scrollTop =
+      this.dom.chatMessages.scrollHeight;
+
+  }
+
+  initializeAnimations() {
+
+    document.body.classList.add(
+      "app-loaded"
+    );
+
   }
 
 }
 
-@keyframes fadeUp{
+/* ════════════════════════════════════════════════════════
+   START APPLICATION
+══════════════════════════════════════════════════════════ */
 
-  from{
-    opacity:0;
-    transform:translateY(10px);
+document.addEventListener(
+
+  "DOMContentLoaded",
+
+  () => {
+
+    window.EBD_APP =
+      new ConferenceApp();
+
   }
 
-  to{
-    opacity:1;
-    transform:translateY(0);
-  }
-
-}
+);
 </script>
 </body>
 </html>
