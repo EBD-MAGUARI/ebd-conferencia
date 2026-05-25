@@ -796,7 +796,7 @@ select {
 const CFG = {
   urlPagamento: "https://checkout.infinitepay.io/midian-caldas/1Z7C16LQVb",
   urlScript:    "https://script.google.com/macros/s/AKfycbyFRrZ9OWl5xkrKh6pLMK8-TpBcIKWqahcGD3_4rA0qbEYrs4zb4wvHsQZO_jW_duLwgA/exec",
-  numeroZap:    "5591980208294",
+  numeroZap:    "5591992346353",
 };
 let participant = {};
 
@@ -880,7 +880,7 @@ async function doConfirm(){
 }
 
 function showSuccess(d){
-  const texto = `📚 CONFERÊNCIA DA EBD\nCONFIRMAÇÃO DE INSCRIÇÃO\n\nPrezado(a) ${d.nome},\n\nInformamos que o pagamento referente à sua inscrição foi confirmado com sucesso.\nOs dados abaixo foram registrados em nosso sistema:\n\n👤 Participante: ${d.nome}\n📞 Telefone: ${d.telefone}\n⛪ Congregação: ${d.congregacao}\n👥 Grupo: ${d.grupo}\n📍 Área: ${d.area}\n🆔 Número do Pedido: ${d.orderId}\n\nSua participação na Conferência da EBD está oficialmente confirmada.\n\nSolicitamos que esta confirmação seja mantida para apresentação no credenciamento do evento.\n\nAtenciosamente,\nSecretaria Oficial da Conferência da EBD`;
+  const texto = `📚 CONFERÊNCIA DA EBD\nCONFIRMAÇÃO DE INSCRIÇÃO\n\nInformamos que o pagamento referente à sua inscrição foi confirmado com sucesso.\nOs dados abaixo foram registrados em nosso sistema:\n\n👤 Participante: ${d.nome}\n📞 Telefone: ${d.telefone}\n⛪ Congregação: ${d.congregacao}\n👥 Grupo: ${d.grupo}\n📍 Área: ${d.area}\n🆔 Número do Pedido: ${d.orderId}\n\nSua participação na Conferência da EBD está oficialmente confirmada.\n\nSolicitamos que esta confirmação seja mantida para apresentação no credenciamento do evento.\n\nAtenciosamente,\nSecretaria da EBD`;
   document.getElementById("zapBtn").href = `https://wa.me/${CFG.numeroZap}?text=${encodeURIComponent(texto)}`;
   document.getElementById("orderTag").textContent = `ID: ${d.orderId}`;
   setStep(3);
