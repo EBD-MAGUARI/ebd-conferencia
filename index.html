@@ -5,421 +5,186 @@
 <title>Conferência EBD — Inscrição</title>
 <link rel="icon" href="Design sem nome (2).png" type="image/png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
 <style>
-:root {
-  --ink:        #080e1f;
-  --ink-2:      #111929;
-  --midnight:   #040810;
-  --cobalt:     #1d4ed8;
-  --cobalt-2:   #2563eb;
-  --cobalt-lt:  #3b82f6;
-  --sky-lt:     #eff6ff;
-  --gold:       #c9960f;
-  --gold-lt:    #f4cf5a;
-  --gold-bg:    #fffbeb;
-  --gold-border:rgba(201,150,15,.22);
-  --surface:    #ffffff;
-  --surface-2:  #f7f9fd;
-  --border:     #e2e8f3;
-  --border-2:   #cdd5e8;
-  --text-1:     #090f20;
-  --text-2:     #354165;
-  --text-3:     #6e7fa0;
-  --green:      #16a34a;
-  --red:        #dc2626;
-  --ff-serif:   'Playfair Display', Georgia, serif;
-  --ff-sans:    'DM Sans', system-ui, sans-serif;
-  --r-md: 12px; --r-lg: 16px; --r-xl: 22px; --r-2xl: 28px;
-}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
-body{font-family:var(--ff-sans);background:var(--midnight);min-height:100vh;color:var(--text-1);overflow-x:hidden;-webkit-font-smoothing:antialiased;}
+body{font-family:'DM Sans',system-ui,sans-serif;background:#f1f5f9;min-height:100vh;color:#1e293b;-webkit-font-smoothing:antialiased;}
 
-.scene{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;background:radial-gradient(ellipse 90% 55% at 15% -5%,rgba(29,78,216,.28) 0%,transparent 55%),radial-gradient(ellipse 65% 45% at 88% 108%,rgba(201,150,15,.16) 0%,transparent 50%),linear-gradient(165deg,#040810 0%,#07101e 45%,#0a1628 100%);}
-.orb{position:absolute;border-radius:50%;pointer-events:none;filter:blur(80px);animation:orbDrift ease-in-out infinite alternate;}
-.orb-a{width:600px;height:600px;top:-200px;left:-120px;background:radial-gradient(circle,rgba(29,78,216,.15) 0%,transparent 65%);animation-duration:26s;}
-.orb-b{width:450px;height:450px;bottom:2%;right:-100px;background:radial-gradient(circle,rgba(201,150,15,.12) 0%,transparent 65%);filter:blur(90px);animation-duration:20s;animation-direction:alternate-reverse;}
-@keyframes orbDrift{from{transform:translate(0,0) scale(1);}to{transform:translate(32px,24px) scale(1.08);}}
+.page{min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:24px 16px 48px;}
 
-.page{position:relative;z-index:1;min-height:100vh;display:flex;align-items:flex-start;justify-content:center;}
+.card{width:100%;max-width:480px;background:#fff;border-radius:20px;box-shadow:0 4px 24px rgba(0,0,0,.08);overflow:hidden;}
 
-.card{width:100%;max-width:600px;background:var(--surface);overflow:hidden;position:relative;box-shadow:0 0 0 1px rgba(255,255,255,.04),0 32px 80px rgba(4,8,16,.25);animation:cardIn .75s cubic-bezier(0.16,1,0.3,1) both;}
-@keyframes cardIn{from{opacity:0;transform:translateY(44px) scale(.96);}to{opacity:1;transform:translateY(0) scale(1);}}
-@media(min-width:680px){.card{border-radius:var(--r-2xl);margin:44px 20px;}}
-
-/* HERO */
-.hero{position:relative;height:clamp(180px,30vw,280px);overflow:hidden;background:var(--ink-2);}
-.hero-img{width:100%;height:100%;object-fit:cover;display:block;opacity:.8;}
-.hero-overlay{position:absolute;inset:0;background:linear-gradient(to right,rgba(4,8,16,.68) 0%,rgba(4,8,16,.08) 65%),linear-gradient(to top,rgba(4,8,16,.96) 0%,transparent 52%);}
-.hero-diagonal{position:absolute;bottom:-1px;left:0;right:0;height:48px;background:var(--surface);clip-path:polygon(0 100%,100% 100%,100% 50%,0 100%);}
-.badge{position:absolute;top:18px;left:18px;display:inline-flex;align-items:center;gap:7px;background:rgba(4,8,16,.55);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.15);border-radius:100px;padding:6px 14px;font-size:10px;font-weight:600;letter-spacing:1.8px;text-transform:uppercase;color:rgba(255,255,255,.9);}
-.live-dot{width:7px;height:7px;border-radius:50%;background:#4ade80;box-shadow:0 0 8px rgba(74,222,128,.7);animation:livePulse 2s ease infinite;}
-@keyframes livePulse{0%,100%{opacity:1;}50%{opacity:.4;}}
-.hero-text{position:absolute;bottom:24px;left:0;right:0;padding:0 28px;}
-.hero-label{font-size:10px;font-weight:600;letter-spacing:2.8px;text-transform:uppercase;color:var(--gold-lt);margin-bottom:6px;display:flex;align-items:center;gap:8px;}
-.hero-label::before{content:'';display:inline-block;width:18px;height:1.5px;background:var(--gold-lt);opacity:.8;}
-.hero-title{font-family:var(--ff-serif);font-size:clamp(24px,6vw,40px);font-weight:700;font-style:italic;color:#fff;line-height:1.1;text-shadow:0 2px 20px rgba(4,8,16,.35);}
-.shimmer-line{height:2px;background:linear-gradient(90deg,transparent 0%,var(--gold) 20%,var(--gold-lt) 50%,var(--gold) 80%,transparent 100%);background-size:300% 100%;animation:shimmerH 5s linear infinite;}
-@keyframes shimmerH{0%{background-position:200% 0;}100%{background-position:-200% 0;}}
+/* TOPO */
+.topo{background:#1e3a8a;padding:28px 28px 24px;text-align:center;}
+.topo img{width:72px;height:72px;border-radius:50%;object-fit:cover;border:3px solid rgba(255,255,255,.25);margin-bottom:14px;display:block;margin-left:auto;margin-right:auto;}
+.topo h1{font-size:20px;font-weight:700;color:#fff;margin-bottom:4px;}
+.topo p{font-size:13px;color:rgba(255,255,255,.6);}
 
 /* BODY */
-.body{padding:clamp(24px,5vw,40px) clamp(20px,5vw,40px);}
+.corpo{padding:28px;}
 
-/* PROGRESS TRACK */
-.progress{display:flex;align-items:center;margin-bottom:32px;}
-.prog-step{display:flex;flex-direction:column;align-items:center;gap:5px;flex:1;}
-.prog-step:not(:last-child){position:relative;}
-.prog-step:not(:last-child)::after{content:'';position:absolute;top:15px;left:calc(50% + 18px);right:calc(-50% + 18px);height:2px;background:var(--border-2);transition:background .5s;}
-.prog-step.done:not(:last-child)::after{background:var(--cobalt);}
-.prog-num{width:30px;height:30px;border-radius:50%;border:2px solid var(--border-2);background:var(--surface);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--text-3);transition:all .35s;position:relative;z-index:1;}
-.prog-step.active .prog-num{border-color:var(--cobalt);background:var(--cobalt);color:#fff;box-shadow:0 0 0 4px rgba(37,99,235,.12);}
-.prog-step.done  .prog-num{border-color:var(--cobalt);background:var(--cobalt);color:#fff;}
-.prog-label{font-size:9.5px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;color:var(--text-3);transition:color .35s;}
-.prog-step.active .prog-label,.prog-step.done .prog-label{color:var(--cobalt);}
+/* ETAPA */
+.etapa-lbl{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#94a3b8;margin-bottom:18px;}
 
-/* SECTION LABEL */
-.sec-lbl{font-size:10.5px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text-3);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
-.sec-lbl::before{content:'';width:18px;height:1.5px;background:var(--border-2);}
+/* CAMPOS */
+.campo{margin-bottom:14px;}
+.campo label{display:block;font-size:13px;font-weight:600;color:#475569;margin-bottom:6px;}
+.campo input,.campo select{width:100%;height:46px;border:1.5px solid #e2e8f0;border-radius:10px;padding:0 14px;font-family:inherit;font-size:15px;color:#1e293b;outline:none;background:#fff;transition:border-color .2s;-webkit-appearance:none;}
+@media(max-width:480px){.campo input,.campo select{font-size:16px;}}
+.campo input:focus,.campo select:focus{border-color:#1d4ed8;box-shadow:0 0 0 3px rgba(29,78,216,.08);}
+.campo select{background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");background-repeat:no-repeat;background-position:right 12px center;padding-right:36px;cursor:pointer;}
 
-/* FIELDS */
-.field{margin-bottom:14px;}
-.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;}
-@media(max-width:420px){.field-row{grid-template-columns:1fr;}}
-.field-label{font-size:12px;font-weight:500;color:var(--text-2);margin-bottom:6px;display:flex;align-items:center;gap:4px;}
-.req{color:var(--cobalt-2);font-weight:700;}
-.input-wrap{position:relative;display:flex;align-items:center;}
-.input-icon{position:absolute;left:12px;font-size:14px;opacity:.35;pointer-events:none;}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+@media(max-width:380px){.grid2{grid-template-columns:1fr;}}
 
-input[type="text"],input[type="tel"],select{width:100%;height:48px;padding:0 14px 0 40px;border-radius:var(--r-md);border:1.5px solid var(--border);background:var(--surface);font-family:var(--ff-sans);font-size:15px;font-weight:400;color:var(--text-1);outline:none;transition:border-color .2s,box-shadow .2s;-webkit-appearance:none;appearance:none;}
-@media(max-width:480px){input[type="text"],input[type="tel"],select{font-size:16px;}}
-input:focus,select:focus{border-color:var(--cobalt);box-shadow:0 0 0 3px rgba(37,99,235,.1);background:#fafcff;}
-input.err{border-color:var(--red);box-shadow:0 0 0 3px rgba(220,38,38,.08);}
-select{background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236e7fa0' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");background-repeat:no-repeat;background-position:right 12px center;background-size:14px;padding-right:36px;cursor:pointer;}
+/* VALOR */
+.valor{display:flex;align-items:center;justify-content:space-between;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:12px;padding:16px 18px;margin:20px 0 0;}
+.valor-info p{font-size:11px;font-weight:600;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;margin-bottom:2px;}
+.valor-info strong{font-size:24px;font-weight:700;color:#1e293b;}
+.pix-tag{background:#e0f2fe;color:#0369a1;font-size:11px;font-weight:700;padding:5px 12px;border-radius:100px;letter-spacing:.5px;}
 
-/* PRICE */
-.price-row{display:flex;align-items:center;justify-content:space-between;background:var(--ink);border-radius:var(--r-lg);padding:18px 22px;margin:20px 0;border:1px solid rgba(255,255,255,.05);overflow:hidden;position:relative;}
-.price-row::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 55% 80% at 95% 50%,rgba(201,150,15,.13) 0%,transparent 60%);pointer-events:none;}
-.price-info{position:relative;}
-.price-lbl{font-size:10px;font-weight:600;letter-spacing:1.8px;text-transform:uppercase;color:rgba(255,255,255,.38);margin-bottom:3px;}
-.price-amt{font-family:var(--ff-serif);font-size:28px;font-weight:700;color:var(--gold-lt);line-height:1;}
-.price-sub{font-size:11px;color:rgba(255,255,255,.28);margin-top:2px;}
-.pix-badge{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:6px 12px;font-size:10px;font-weight:700;letter-spacing:1.2px;color:rgba(255,255,255,.6);text-transform:uppercase;position:relative;}
+/* ERRO */
+.erro{font-size:12px;color:#dc2626;font-weight:500;margin-top:10px;display:none;}
+.erro.show{display:block;}
 
-/* PAY STEP */
-.pay-steps{display:flex;flex-direction:column;gap:12px;margin:20px 0;}
-.pay-step{display:flex;align-items:flex-start;gap:14px;padding:14px 16px;border-radius:var(--r-md);border:1.5px solid var(--border);background:var(--surface-2);transition:all .3s;}
-.pay-step.current{border-color:var(--cobalt);background:var(--sky-lt);box-shadow:0 0 0 3px rgba(37,99,235,.08);}
-.pay-step.done-step{border-color:#86efac;background:#f0fdf4;}
-.pay-step-num{width:28px;height:28px;border-radius:50%;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--text-3);flex-shrink:0;transition:all .3s;}
-.pay-step.current .pay-step-num{background:var(--cobalt);color:#fff;}
-.pay-step.done-step .pay-step-num{background:var(--green);color:#fff;}
-.pay-step-body strong{display:block;font-size:13.5px;font-weight:600;color:var(--text-1);margin-bottom:2px;}
-.pay-step.current .pay-step-body strong{color:var(--cobalt);}
-.pay-step.done-step .pay-step-body strong{color:var(--green);}
-.pay-step-body p{font-size:12px;color:var(--text-3);line-height:1.5;}
-
-/* BUTTONS */
-.btn{width:100%;height:52px;border:none;border-radius:var(--r-lg);font-family:var(--ff-sans);font-size:15px;font-weight:700;cursor:pointer;letter-spacing:.2px;display:flex;align-items:center;justify-content:center;gap:9px;transition:all .25s cubic-bezier(0.16,1,0.3,1);position:relative;overflow:hidden;margin-top:6px;}
+/* BOTÕES */
+.btn{width:100%;height:50px;border:none;border-radius:12px;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .2s;margin-top:14px;}
 .btn:active:not(:disabled){transform:scale(.98);}
 .btn:disabled{opacity:.5;cursor:not-allowed;}
+.btn-primary{background:#1d4ed8;color:#fff;box-shadow:0 4px 14px rgba(29,78,216,.25);}
+.btn-primary:hover:not(:disabled){background:#1e40af;box-shadow:0 6px 20px rgba(29,78,216,.35);}
+.btn-green{background:#16a34a;color:#fff;box-shadow:0 4px 14px rgba(22,163,74,.25);}
+.btn-green:hover:not(:disabled){background:#15803d;}
 
-.btn-gold{background:linear-gradient(135deg,#9a6f0a 0%,#c9960f 40%,#f4cf5a 65%,#c9960f 100%);background-size:250% 100%;color:var(--ink);box-shadow:0 6px 22px rgba(201,150,15,.32),inset 0 1px 0 rgba(255,255,255,.28);animation:goldPulse 5s ease infinite;}
-@keyframes goldPulse{0%,100%{background-position:0% 0;}50%{background-position:100% 0;}}
-.btn-gold:hover:not(:disabled){box-shadow:0 12px 32px rgba(201,150,15,.5);transform:translateY(-1px);}
+/* PIX BANNER */
+.pix-box{display:none;background:#eff6ff;border:1.5px solid #bfdbfe;border-radius:12px;padding:18px;margin-top:16px;text-align:center;}
+.pix-box.show{display:block;}
+.pix-box h3{font-size:15px;font-weight:700;color:#1e3a8a;margin-bottom:6px;}
+.pix-box p{font-size:13px;color:#475569;margin-bottom:14px;line-height:1.6;}
 
-.btn-confirm{background:linear-gradient(135deg,var(--cobalt-lt),var(--cobalt));color:#fff;box-shadow:0 6px 20px rgba(37,99,235,.28);}
-.btn-confirm:hover:not(:disabled){box-shadow:0 12px 30px rgba(37,99,235,.44);transform:translateY(-1px);}
-
-.btn-sm{width:auto;height:40px;padding:0 18px;font-size:13px;border-radius:var(--r-md);margin-top:0;}
-
-/* FIELD ERROR */
-.field-error{font-size:12px;color:var(--red);font-weight:500;margin-top:6px;display:none;}
-.field-error.show{display:block;}
-#statusMsg{margin-top:14px;text-align:center;font-size:13.5px;font-weight:600;min-height:22px;}
-.spinner{display:inline-block;width:15px;height:15px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;}
-.spinner-dark{border-color:rgba(9,15,32,.2);border-top-color:var(--ink);}
-@keyframes spin{to{transform:rotate(360deg);}}
-
-/* INLINE PAY BANNER */
-.pay-banner{display:none;background:linear-gradient(135deg,#eff6ff,#f0f9ff);border:1.5px solid #93c5fd;border-radius:var(--r-lg);padding:16px 18px;margin:16px 0;animation:slideIn .4s cubic-bezier(0.16,1,0.3,1);}
-.pay-banner.show{display:block;}
-.pay-banner-head{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
-.pay-banner-head strong{font-size:14px;color:var(--cobalt);font-weight:700;}
-.pay-banner p{font-size:12.5px;color:var(--text-2);line-height:1.6;margin-bottom:12px;}
-.pay-banner .btn-sm{width:100%;}
+/* DIVISOR */
+.div{height:1px;background:#f1f5f9;margin:24px 0;}
 
 /* SUCCESS */
-.success{display:none;padding:clamp(40px,9vw,60px) clamp(20px,5vw,40px);text-align:center;}
-.success-emoji{font-size:72px;display:block;margin-bottom:18px;animation:pop .7s cubic-bezier(0.34,1.56,0.64,1);}
-@keyframes pop{0%{transform:scale(0) rotate(-25deg);opacity:0;}65%{transform:scale(1.15) rotate(5deg);}100%{transform:scale(1) rotate(0);opacity:1;}}
-.success h2{font-family:var(--ff-serif);font-size:clamp(26px,6vw,38px);font-weight:700;color:var(--ink-2);margin-bottom:10px;}
-.success p{font-size:14px;color:var(--text-2);line-height:1.8;margin-bottom:28px;max-width:360px;margin-left:auto;margin-right:auto;}
-.btn-whatsapp{display:inline-flex;align-items:center;justify-content:center;gap:10px;width:100%;max-width:400px;background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;font-family:var(--ff-sans);font-size:15px;font-weight:700;padding:16px 28px;border-radius:var(--r-lg);text-decoration:none;transition:all .25s;box-shadow:0 8px 26px rgba(34,197,94,.28);}
-.btn-whatsapp:hover{transform:translateY(-2px);box-shadow:0 14px 36px rgba(34,197,94,.42);}
-.order-id{display:inline-block;margin-top:20px;background:var(--surface-2);border:1px solid var(--border);border-radius:100px;padding:6px 18px;font-size:11px;color:var(--text-3);font-weight:600;letter-spacing:1.2px;}
+.success{display:none;padding:40px 28px;text-align:center;}
+.s-icon{font-size:64px;display:block;margin-bottom:16px;}
+.success h2{font-size:22px;font-weight:700;color:#1e293b;margin-bottom:8px;}
+.success p{font-size:14px;color:#64748b;line-height:1.7;margin-bottom:24px;}
+.btn-zap{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;background:#16a34a;color:#fff;font-family:inherit;font-size:15px;font-weight:700;padding:16px;border-radius:12px;text-decoration:none;transition:all .2s;box-shadow:0 4px 14px rgba(22,163,74,.25);}
+.btn-zap:hover{background:#15803d;}
+.order-id{display:inline-block;margin-top:16px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:100px;padding:5px 16px;font-size:11px;color:#94a3b8;font-weight:600;}
 
-/* FOOTER */
-.card-foot{display:flex;align-items:center;justify-content:space-between;padding:13px 24px;background:var(--surface-2);border-top:1px solid var(--border);}
-.foot-left{font-size:11px;color:var(--text-3);font-weight:500;}
-.foot-right{font-size:11px;color:var(--text-3);font-weight:500;}
+/* LOADING */
+.loading{display:none;position:fixed;inset:0;background:rgba(255,255,255,.75);backdrop-filter:blur(3px);z-index:999;align-items:center;justify-content:center;flex-direction:column;gap:12px;}
+.loading.show{display:flex;}
+.spin{width:40px;height:40px;border:3px solid #e2e8f0;border-top-color:#1d4ed8;border-radius:50%;animation:sp .65s linear infinite;}
+@keyframes sp{to{transform:rotate(360deg);}}
+.loading span{font-size:14px;font-weight:600;color:#475569;}
 
-/* MAIA FAB */
-#maiaFab{position:fixed;bottom:24px;right:20px;z-index:9000;width:60px;height:60px;border-radius:50%;border:2.5px solid rgba(255,255,255,.92);background:transparent;cursor:pointer;padding:0;overflow:hidden;box-shadow:0 0 0 4px rgba(37,99,235,.22),0 12px 36px rgba(4,8,16,.6);transition:transform .3s cubic-bezier(0.34,1.56,0.64,1),box-shadow .3s;animation:maiaIn .8s 1s cubic-bezier(0.34,1.56,0.64,1) both;}
-@keyframes maiaIn{from{transform:scale(0) rotate(-180deg);opacity:0;}to{transform:scale(1) rotate(0);opacity:1;}}
-#maiaFab:hover{transform:scale(1.08);}
-#maiaFab.open{box-shadow:0 0 0 5px rgba(37,99,235,.35),0 18px 50px rgba(4,8,16,.75);}
-#maiaFab img{width:100%;height:100%;object-fit:cover;display:block;transition:filter .25s;}
-#maiaFab.open img{filter:brightness(.65);}
-#maiaFabX{position:absolute;inset:0;display:none;align-items:center;justify-content:center;font-size:20px;color:#fff;font-weight:700;background:rgba(4,8,16,.45);}
-#maiaFab.open #maiaFabX{display:flex;}
-.notif-dot{position:absolute;top:-1px;right:-1px;width:18px;height:18px;border-radius:50%;background:var(--gold);border:2px solid var(--midnight);font-size:10px;font-weight:700;color:var(--ink);display:flex;align-items:center;justify-content:center;z-index:1;animation:notifBounce 1.4s ease infinite;}
-@keyframes notifBounce{0%,100%{transform:scale(1);}50%{transform:scale(1.2);}}
-.maia-tooltip{position:fixed;bottom:100px;right:20px;z-index:8999;background:var(--ink-2);color:#fff;font-family:var(--ff-sans);font-size:13px;padding:9px 14px;border-radius:var(--r-md);box-shadow:0 8px 24px rgba(4,8,16,.45);border:1px solid rgba(255,255,255,.07);white-space:nowrap;pointer-events:none;transform-origin:bottom right;animation:tipPop .4s cubic-bezier(0.34,1.56,0.64,1);}
-.maia-tooltip::after{content:'';position:absolute;bottom:-6px;right:18px;border:6px solid transparent;border-bottom:none;border-top-color:var(--ink-2);}
-@keyframes tipPop{from{transform:scale(.7);opacity:0;}to{transform:scale(1);opacity:1;}}
-#maiaChat{position:fixed;bottom:100px;right:20px;z-index:8998;width:min(400px,calc(100vw - 32px));height:min(600px,calc(100vh - 120px));background:var(--surface);border-radius:20px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 0 0 1px rgba(37,99,235,.07),0 40px 100px rgba(4,8,16,.5);transform:scale(.8) translateY(30px);transform-origin:bottom right;opacity:0;pointer-events:none;transition:transform .35s cubic-bezier(0.34,1.56,0.64,1),opacity .25s;}
-#maiaChat.open{transform:scale(1) translateY(0);opacity:1;pointer-events:auto;}
-.chat-head{flex-shrink:0;background:var(--ink);padding:16px 18px;border-bottom:2px solid var(--gold);display:flex;align-items:center;gap:12px;}
-.chat-av{width:42px;height:42px;border-radius:12px;overflow:hidden;flex-shrink:0;border:2px solid rgba(255,255,255,.18);}
-.chat-av img{width:100%;height:100%;object-fit:cover;display:block;}
-.chat-name{font-size:14px;font-weight:600;color:#fff;display:block;}
-.chat-status{display:flex;align-items:center;gap:5px;font-size:11px;color:rgba(255,255,255,.55);margin-top:2px;}
-.online-dot{width:7px;height:7px;border-radius:50%;background:#4ade80;animation:livePulse 2.5s ease infinite;}
-.chat-close{width:30px;height:30px;border-radius:8px;border:none;background:rgba(255,255,255,.07);color:rgba(255,255,255,.6);font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;}
-.chat-close:hover{background:rgba(255,255,255,.16);color:#fff;}
-.chat-body{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;background:#f6f9ff;scroll-behavior:smooth;}
-.chat-body::-webkit-scrollbar{width:3px;}.chat-body::-webkit-scrollbar-thumb{background:#c5d4f0;border-radius:3px;}
-.msg{display:flex;gap:8px;align-items:flex-end;animation:msgIn .3s cubic-bezier(0.16,1,0.3,1);}
-.msg.user{flex-direction:row-reverse;}
-@keyframes msgIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
-.msg-av{width:26px;height:26px;border-radius:50%;overflow:hidden;flex-shrink:0;border:1.5px solid rgba(255,255,255,.8);}
-.msg-av img{width:100%;height:100%;object-fit:cover;display:block;}
-.msg-col{max-width:82%;display:flex;flex-direction:column;gap:3px;}
-.msg.user .msg-col{align-items:flex-end;}
-.bubble{padding:9px 13px;font-size:13px;line-height:1.6;word-break:break-word;}
-.bubble.bot{background:var(--surface);color:var(--text-1);border-radius:13px 13px 13px 4px;box-shadow:0 1px 3px rgba(0,0,0,.06);}
-.bubble.user{background:linear-gradient(135deg,var(--cobalt-lt),var(--cobalt));color:#fff;border-radius:13px 13px 4px 13px;}
-.msg-ts{font-size:9.5px;color:#b0bdd5;padding:0 3px;}
-.typing{display:flex;gap:8px;align-items:flex-end;animation:msgIn .3s cubic-bezier(0.16,1,0.3,1);}
-.typing-bub{background:var(--surface);border-radius:13px 13px 13px 4px;padding:11px 13px;display:flex;gap:4px;align-items:center;box-shadow:0 1px 3px rgba(0,0,0,.06);}
-.t-dot{width:6px;height:6px;border-radius:50%;background:#b8cbe8;animation:tdot 1.3s ease infinite;}
-.t-dot:nth-child(2){animation-delay:.18s;}.t-dot:nth-child(3){animation-delay:.36s;}
-@keyframes tdot{0%,60%,100%{transform:translateY(0);}30%{transform:translateY(-6px);}}
-.chips{flex-shrink:0;padding:9px 12px;display:flex;gap:6px;flex-wrap:wrap;border-top:1px solid #edf0f9;background:var(--surface);}
-.chip{background:var(--sky-lt);color:var(--cobalt);border:1px solid #bfdbfe;border-radius:100px;font-family:var(--ff-sans);font-size:11px;font-weight:600;padding:5px 12px;cursor:pointer;transition:all .2s;}
-.chip:hover{background:var(--cobalt);color:#fff;border-color:var(--cobalt);}
-.chat-input-bar{flex-shrink:0;padding:10px 12px;border-top:1px solid #edf0f9;display:flex;gap:8px;align-items:flex-end;background:var(--surface);}
-#maiaInput{flex:1;border:1.5px solid var(--border);border-radius:var(--r-md);padding:9px 12px;font-size:13.5px;font-family:var(--ff-sans);outline:none;resize:none;max-height:90px;line-height:1.45;color:var(--text-1);transition:border-color .2s;}
-#maiaInput:focus{border-color:var(--cobalt);box-shadow:0 0 0 3px rgba(37,99,235,.08);}
-#maiaSend{width:38px;height:38px;border-radius:var(--r-md);border:none;background:linear-gradient(135deg,var(--cobalt-lt),var(--cobalt));color:#fff;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .25s;box-shadow:0 4px 12px rgba(37,99,235,.25);}
-#maiaSend:hover{transform:scale(1.1);}
-#maiaSend:disabled{opacity:.45;cursor:not-allowed;transform:none;}
-@keyframes slideIn{from{opacity:0;transform:translateX(-12px);}to{opacity:1;transform:translateX(0);}}
-
-/* LOADING OVERLAY */
-.loading-overlay{display:none;position:fixed;inset:0;z-index:9999;background:rgba(4,8,16,.7);backdrop-filter:blur(4px);align-items:center;justify-content:center;flex-direction:column;gap:16px;}
-.loading-overlay.show{display:flex;}
-.loading-spinner{width:48px;height:48px;border:4px solid rgba(255,255,255,.15);border-top-color:var(--gold-lt);border-radius:50%;animation:spin .7s linear infinite;}
-.loading-text{font-size:14px;font-weight:600;color:rgba(255,255,255,.8);letter-spacing:.5px;}
+/* RODAPÉ */
+.rodape{text-align:center;padding:14px;border-top:1px solid #f1f5f9;font-size:11px;color:#94a3b8;}
 </style>
 </head>
 <body>
 
-<div class="scene"><div class="orb orb-a"></div><div class="orb orb-b"></div></div>
-
-<!-- Loading overlay -->
-<div class="loading-overlay" id="loadingOverlay">
-  <div class="loading-spinner"></div>
-  <span class="loading-text">Registrando sua inscrição…</span>
+<div class="loading" id="loading">
+  <div class="spin"></div>
+  <span>Registrando inscrição…</span>
 </div>
 
 <div class="page">
 <div class="card">
 
-  <div class="hero">
-    <img src="ebd.png" alt="Conferência EBD" class="hero-img">
-    <div class="hero-overlay"></div>
-    <div class="hero-diagonal"></div>
-    <div class="badge"><span class="live-dot"></span>Inscrições Abertas</div>
-    <div class="hero-text">
-      <p class="hero-label">AD Maguari · EBD Oficial</p>
-      <h1 class="hero-title">Conferência da EBD</h1>
-    </div>
+  <div class="topo">
+    <img src="ebd.png" alt="EBD">
+    <h1>Conferência da EBD</h1>
+    <p>AD Maguari · Inscrições Abertas</p>
   </div>
-  <div class="shimmer-line"></div>
 
-  <!-- MAIN FORM -->
-  <div class="body" id="telaForm">
+  <!-- FORMULÁRIO -->
+  <div id="telaForm">
+    <div class="corpo">
 
-    <!-- PROGRESS -->
-    <div class="progress" id="progBar">
-      <div class="prog-step active" id="p1"><div class="prog-num">1</div><span class="prog-label">Dados</span></div>
-      <div class="prog-step" id="p2"><div class="prog-num">2</div><span class="prog-label">Pagamento</span></div>
-      <div class="prog-step" id="p3"><div class="prog-num">✓</div><span class="prog-label">Concluído</span></div>
-    </div>
+      <!-- ETAPA 1: DADOS -->
+      <div id="secDados">
+        <p class="etapa-lbl">Seus dados</p>
 
-    <!-- DADOS -->
-    <div id="secDados">
-      <p class="sec-lbl">1 — Seus dados</p>
-
-      <div class="field">
-        <div class="field-label">Nome completo <span class="req">*</span></div>
-        <div class="input-wrap">
-          <span class="input-icon">👤</span>
+        <div class="campo">
+          <label>Nome completo</label>
           <input type="text" id="f_nome" placeholder="Seu nome completo" autocomplete="name">
         </div>
-      </div>
 
-      <div class="field-row">
-        <div class="field">
-          <div class="field-label">Telefone <span class="req">*</span></div>
-          <div class="input-wrap">
-            <span class="input-icon">📱</span>
-            <input type="tel" id="f_tel" placeholder="(91) 99999-9999" inputmode="numeric">
-          </div>
+        <div class="campo">
+          <label>Telefone</label>
+          <input type="tel" id="f_tel" placeholder="(91) 99999-9999" inputmode="numeric">
         </div>
-        <div class="field">
-          <div class="field-label">Área <span class="req">*</span></div>
-          <div class="input-wrap">
-            <span class="input-icon">📍</span>
-            <select id="f_area" style="padding-left:40px">
+
+        <div class="grid2">
+          <div class="campo">
+            <label>Área</label>
+            <select id="f_area">
               <option value="">Selecione</option>
-              <option value="Curuçambá">Curuçambá</option>
-              <option value="Distrito Industrial">Dist. Industrial</option>
-              <option value="PAAR">PAAR</option>
-              <option value="Guajará">Guajará</option>
+              <option>Curuçambá</option>
+              <option>Distrito Industrial</option>
+              <option>PAAR</option>
+              <option>Guajará</option>
             </select>
           </div>
-        </div>
-      </div>
-
-      <div class="field-row">
-        <div class="field">
-          <div class="field-label">Congregação <span class="req">*</span></div>
-          <div class="input-wrap">
-            <span class="input-icon">⛪</span>
-            <input type="text" id="f_cong" placeholder="Nome da congregação">
+          <div class="campo">
+            <label>Congregação</label>
+            <input type="text" id="f_cong" placeholder="Sua congregação">
           </div>
         </div>
-        <div class="field">
-          <div class="field-label">Grupo <span class="req">*</span></div>
-          <div class="input-wrap">
-            <span class="input-icon">👥</span>
-            <input type="text" id="f_grupo" placeholder="Seu grupo">
+
+        <div class="campo">
+          <label>Grupo</label>
+          <input type="text" id="f_grupo" placeholder="Seu grupo">
+        </div>
+
+        <div class="valor">
+          <div class="valor-info">
+            <p>Taxa de inscrição</p>
+            <strong>R$ 35,00</strong>
           </div>
+          <span class="pix-tag">PIX</span>
         </div>
+
+        <div class="erro" id="dadosErr"></div>
+
+        <button class="btn btn-primary" onclick="goToPayment()">Ir para o pagamento →</button>
       </div>
 
-      <div class="field-error" id="dadosErr"></div>
+      <!-- ETAPA 2: PAGAMENTO -->
+      <div id="secPag" style="display:none;">
+        <p class="etapa-lbl">Pagamento</p>
 
-      <!-- VALOR -->
-      <div class="price-row">
-        <div class="price-info">
-          <p class="price-lbl">Taxa de Inscrição</p>
-          <p class="price-amt">R$ 35,00</p>
-          <p class="price-sub">Pagamento único via PIX</p>
+        <button class="btn btn-primary" id="btnPix" onclick="abrirPix()">🔗 Abrir pagamento PIX — R$ 35,00</button>
+
+        <div class="pix-box" id="pixBox">
+          <h3>✅ Pagamento feito?</h3>
+          <p>Clique abaixo para confirmar sua inscrição.</p>
+          <button class="btn btn-green" onclick="confirmar()" style="margin-top:0;">Confirmar inscrição</button>
         </div>
-        <div class="pix-badge">PIX</div>
+
+        <div class="erro" id="pagErr"></div>
       </div>
 
-      <button class="btn btn-gold" id="btnGoStep2" onclick="goToPayment()">
-        💳 Próximo: Ir para o Pagamento
-      </button>
     </div>
+  </div>
 
-    <!-- PAGAMENTO -->
-    <div id="secPag" style="display:none;margin-top:10px;">
-      <p class="sec-lbl">2 — Pagamento</p>
-
-      <div class="pay-steps" id="paySteps">
-        <div class="pay-step current" id="ps1">
-          <div class="pay-step-num">1</div>
-          <div class="pay-step-body">
-            <strong>Abrir o pagamento PIX</strong>
-            <p>Toque no botão abaixo para abrir o PIX de R$&nbsp;35,00 em nova aba.</p>
-          </div>
-        </div>
-        <div class="pay-step" id="ps2">
-          <div class="pay-step-num">2</div>
-          <div class="pay-step-body">
-            <strong>Fazer o pagamento</strong>
-            <p>Conclua o pagamento na outra aba e volte aqui.</p>
-          </div>
-        </div>
-        <div class="pay-step" id="ps3">
-          <div class="pay-step-num">3</div>
-          <div class="pay-step-body">
-            <strong>Confirmar inscrição</strong>
-            <p>Clique em "Já paguei" para confirmar e gerar seu comprovante.</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Botão abrir pix -->
-      <button class="btn btn-gold" id="btnAbrirPix" onclick="abrirPix()" style="margin-top:4px;">
-        🔗 Abrir pagamento PIX
-      </button>
-
-      <!-- Banner "já paguei" -->
-      <div class="pay-banner" id="payBanner">
-        <div class="pay-banner-head">
-          <span>✅</span>
-          <strong>Já fez o pagamento?</strong>
-        </div>
-        <p>Ótimo! Clique no botão abaixo para confirmar sua inscrição agora mesmo.</p>
-        <button class="btn btn-sm btn-confirm" id="btnJaPaguei" onclick="confirmarDireto()">✅ Já paguei — confirmar inscrição</button>
-      </div>
-
-      <div id="statusMsg"></div>
-    </div>
-
-  </div><!-- /telaForm -->
-
-  <!-- SUCCESS -->
+  <!-- SUCESSO -->
   <div class="success" id="telaOk">
-    <span class="success-emoji">🎉</span>
+    <span class="s-icon">🎉</span>
     <h2>Inscrição Confirmada!</h2>
-    <p>Seus dados foram registrados com sucesso.<br>Envie o comprovante pelo WhatsApp para que seu líder de área finalize sua vaga.</p>
-    <a id="zapBtn" href="#" target="_blank" class="btn-whatsapp">📲 Enviar comprovante no WhatsApp</a>
+    <p>Seus dados foram registrados.<br>Envie a confirmação pelo WhatsApp ao seu líder de área.</p>
+    <a id="zapBtn" href="#" target="_blank" class="btn-zap">📲 Enviar no WhatsApp</a>
     <div class="order-id" id="orderTag"></div>
   </div>
 
-  <div class="card-foot">
-    <span class="foot-left">EBD AD Maguari · Sistema de Inscrição</span>
-    <span class="foot-right">🔒 Seguro</span>
-  </div>
+  <div class="rodape">EBD AD Maguari · 🔒 Seguro</div>
 
 </div>
-</div>
-
-<!-- MAIA -->
-<div class="maia-tooltip" id="maiaTip" style="display:none">💬 Precisa de ajuda? É só chamar!</div>
-<button id="maiaFab" onclick="toggleMaia()" aria-label="Assistente Maia">
-  <div class="notif-dot" id="maiaNotif">!</div>
-  <span id="maiaFabX">✕</span>
-  <img src="maia.png" alt="Maia">
-</button>
-<div id="maiaChat" role="dialog" aria-modal="true">
-  <div class="chat-head">
-    <div class="chat-av"><img src="maia.png" alt="Maia"></div>
-    <div class="chat-info">
-      <span class="chat-name">Maia · Assistente EBD</span>
-      <div class="chat-status"><span class="online-dot"></span>Online agora</div>
-    </div>
-    <button class="chat-close" onclick="toggleMaia()">✕</button>
-  </div>
-  <div class="chat-body" id="chatBody"></div>
-  <div class="chips" id="chatChips">
-    <button class="chip" onclick="useChip(this)">Como me inscrever?</button>
-    <button class="chip" onclick="useChip(this)">Qual o valor?</button>
-    <button class="chip" onclick="useChip(this)">Como pagar?</button>
-    <button class="chip" onclick="useChip(this)">Deu erro, e agora?</button>
-  </div>
-  <div class="chat-input-bar">
-    <textarea id="maiaInput" rows="1" placeholder="Digite sua dúvida…" onkeydown="maiaKey(event)" oninput="maiaResize(this)"></textarea>
-    <button id="maiaSend" onclick="maiaSend()" aria-label="Enviar">➤</button>
-  </div>
 </div>
 
 <script>
@@ -430,7 +195,6 @@ const CFG = {
 };
 let participant = {};
 
-// Máscara telefone
 document.getElementById("f_tel").addEventListener("input", function(){
   let v = this.value.replace(/\D/g,"");
   if(v.length > 11) v = v.slice(0,11);
@@ -440,8 +204,8 @@ document.getElementById("f_tel").addEventListener("input", function(){
 });
 
 function goToPayment(){
-  const errEl = document.getElementById("dadosErr");
-  errEl.textContent = ""; errEl.classList.remove("show");
+  const err = document.getElementById("dadosErr");
+  err.textContent = ""; err.classList.remove("show");
 
   const nome  = document.getElementById("f_nome").value.trim();
   const tel   = document.getElementById("f_tel").value.trim();
@@ -451,7 +215,7 @@ function goToPayment(){
 
   const checks = [{v:nome,l:"nome completo"},{v:tel,l:"telefone"},{v:area,l:"área"},{v:cong,l:"congregação"},{v:grupo,l:"grupo"}];
   for(const c of checks){
-    if(!c.v){ errEl.textContent = `⚠️ Por favor, preencha o campo "${c.l}".`; errEl.classList.add("show"); return; }
+    if(!c.v){ err.textContent = `⚠️ Preencha o campo "${c.l}".`; err.classList.add("show"); return; }
   }
 
   participant = { nome, telefone:tel, congregacao:cong, grupo, area, orderId:"EBD-"+Date.now() };
@@ -459,31 +223,17 @@ function goToPayment(){
 
   document.getElementById("secDados").style.display = "none";
   document.getElementById("secPag").style.display   = "block";
-  setStep(2);
   window.scrollTo({top:0, behavior:"smooth"});
 }
 
 function abrirPix(){
   window.open(CFG.urlPagamento, "_blank");
-  document.getElementById("ps1").classList.remove("current");
-  document.getElementById("ps1").classList.add("done-step");
-  document.getElementById("ps1").querySelector(".pay-step-num").textContent = "✓";
-  document.getElementById("ps2").classList.add("current");
-  document.getElementById("btnAbrirPix").textContent = "🔗 Reabrir pagamento PIX";
-  setTimeout(()=>{ document.getElementById("payBanner").classList.add("show"); }, 3000);
+  document.getElementById("btnPix").textContent = "🔗 Reabrir pagamento PIX";
+  setTimeout(()=>{ document.getElementById("pixBox").classList.add("show"); }, 3000);
 }
 
-async function confirmarDireto(){
-  // Atualiza visual dos passos
-  document.getElementById("ps2").classList.remove("current");
-  document.getElementById("ps2").classList.add("done-step");
-  document.getElementById("ps2").querySelector(".pay-step-num").textContent = "✓";
-  document.getElementById("ps3").classList.add("current");
-  document.getElementById("payBanner").style.display = "none";
-
-  // Mostra loading
-  const overlay = document.getElementById("loadingOverlay");
-  overlay.classList.add("show");
+async function confirmar(){
+  document.getElementById("loading").classList.add("show");
 
   const payload = {
     ...participant,
@@ -501,119 +251,24 @@ async function confirmarDireto(){
       body: JSON.stringify(payload)
     });
     try{ sessionStorage.removeItem("ebd_p"); }catch(_){}
-    overlay.classList.remove("show");
-    showSuccess(participant);
+    document.getElementById("loading").classList.remove("show");
+    mostrarSucesso();
   } catch(err) {
-    overlay.classList.remove("show");
-    const msg = document.getElementById("statusMsg");
-    msg.style.color = "var(--red)";
-    msg.innerHTML = "❌ Erro ao enviar. Verifique sua internet e tente novamente.";
-    // Reexibe o banner para tentar de novo
-    document.getElementById("payBanner").style.display = "block";
+    document.getElementById("loading").classList.remove("show");
+    const e = document.getElementById("pagErr");
+    e.textContent = "❌ Erro ao enviar. Verifique sua internet e tente novamente.";
+    e.classList.add("show");
   }
 }
 
-function showSuccess(d){
-  const texto = `📚 CONFERÊNCIA DA EBD\nCONFIRMAÇÃO DE INSCRIÇÃO\n\nInformamos que o pagamento referente à sua inscrição foi confirmado com sucesso.\nOs dados abaixo foram registrados em nosso sistema:\n\n👤 Participante: ${d.nome}\n📞 Telefone: ${d.telefone}\n⛪ Congregação: ${d.congregacao}\n👥 Grupo: ${d.grupo}\n📍 Área: ${d.area}\n🆔 Número do Pedido: ${d.orderId}\n\nSua participação na Conferência da EBD está oficialmente confirmada.\n\nSolicitamos que esta confirmação seja mantida para apresentação no credenciamento do evento.\n\nAtenciosamente,\nSecretaria da EBD`;
+function mostrarSucesso(){
+  const d = participant;
+  const texto = `📚 CONFERÊNCIA DA EBD\nCONFIRMAÇÃO DE INSCRIÇÃO\n\n👤 ${d.nome}\n📞 ${d.telefone}\n⛪ ${d.congregacao}\n👥 ${d.grupo}\n📍 ${d.area}\n🆔 ${d.orderId}\n\nInscrição confirmada com sucesso!\n\nSecretaria da EBD`;
   document.getElementById("zapBtn").href = `https://wa.me/${CFG.numeroZap}?text=${encodeURIComponent(texto)}`;
   document.getElementById("orderTag").textContent = `ID: ${d.orderId}`;
-  setStep(3);
   document.getElementById("telaForm").style.display = "none";
   document.getElementById("telaOk").style.display   = "block";
   window.scrollTo({top:0, behavior:"smooth"});
-  setTimeout(()=>{ if(!maiaOpen) toggleMaia(); addBot("🎉 Inscrição confirmada! Não esqueça de tocar em **\"Enviar comprovante no WhatsApp\"** para garantir sua vaga com o líder. Boa conferência! ✝️"); }, 1800);
-}
-
-function setStep(n){
-  for(let i=1;i<=3;i++){
-    const el = document.getElementById("p"+i);
-    el.classList.remove("active","done");
-    if(i<n) el.classList.add("done"); else if(i===n) el.classList.add("active");
-  }
-}
-
-// ─── MAIA ───
-let maiaOpen=false, maiaHistory=[], mSending=false, tipTimer=null;
-
-const MAIA_SYSTEM = `Você é a Maia, assistente virtual oficial de inscrições da Conferência da EBD — AD Maguari.
-Sua personalidade: calorosa, cristã, objetiva, profissional e acolhedora.
-DADOS: Valor R$35,00 via PIX. Áreas: Curuçambá, Distrito Industrial, PAAR, Guajará.
-FLUXO SIMPLIFICADO: 1) Preencher dados e clicar "Próximo" 2) Clicar "Abrir pagamento PIX" → pagar → voltar → clicar "Já paguei — confirmar inscrição" → pronto! 3) Enviar confirmação no WhatsApp ao líder.
-PROBLEMAS: Pop-up bloqueado→trocar navegador. Falha→verificar internet.
-SUPORTE: WhatsApp (91) 99923-4635. Respostas curtas (3-4 frases), PT-BR informal mas respeitoso.`;
-
-setTimeout(()=>{ const t=document.getElementById("maiaTip"); t.style.display="block"; tipTimer=setTimeout(()=>t.style.display="none",5000); },3500);
-
-function toggleMaia(){
-  maiaOpen=!maiaOpen;
-  const chat=document.getElementById("maiaChat"), fab=document.getElementById("maiaFab");
-  chat.classList.toggle("open",maiaOpen); fab.classList.toggle("open",maiaOpen);
-  if(maiaOpen){
-    document.getElementById("maiaNotif").style.display="none";
-    document.getElementById("maiaTip").style.display="none";
-    clearTimeout(tipTimer);
-    if(maiaHistory.length===0) initMaia();
-    setTimeout(()=>document.getElementById("maiaInput").focus(),380);
-  }
-}
-function initMaia(){ addBot("Olá! 😊 Sou a **Maia**, assistente da **Conferência da EBD**.\n\nComo posso te ajudar?"); }
-function now(){ return new Date().toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"}); }
-function esc(t){ return t.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
-function fmt(t){ return esc(t).replace(/\*\*(.+?)\*\*/g,"<strong>$1</strong>").replace(/\n/g,"<br>"); }
-function addBot(text){
-  const body=document.getElementById("chatBody");
-  const d=document.createElement("div"); d.className="msg";
-  d.innerHTML=`<div class="msg-av"><img src="maia.png" alt="Maia"></div><div class="msg-col"><div class="bubble bot">${fmt(text)}</div><span class="msg-ts">${now()}</span></div>`;
-  body.appendChild(d); body.scrollTop=body.scrollHeight;
-  maiaHistory.push({role:"assistant",content:text});
-}
-function addUser(text){
-  const body=document.getElementById("chatBody");
-  const d=document.createElement("div"); d.className="msg user";
-  d.innerHTML=`<div class="msg-col"><div class="bubble user">${esc(text)}</div><span class="msg-ts">${now()}</span></div>`;
-  body.appendChild(d); body.scrollTop=body.scrollHeight;
-  maiaHistory.push({role:"user",content:text});
-}
-function showTyping(){
-  const body=document.getElementById("chatBody");
-  const d=document.createElement("div"); d.className="typing"; d.id="typingRow";
-  d.innerHTML=`<div class="msg-av"><img src="maia.png" alt="Maia"></div><div class="typing-bub"><div class="t-dot"></div><div class="t-dot"></div><div class="t-dot"></div></div>`;
-  body.appendChild(d); body.scrollTop=body.scrollHeight;
-}
-function hideTyping(){ document.getElementById("typingRow")?.remove(); }
-function pageCtx(){
-  if(document.getElementById("telaOk").style.display!=="none") return "Inscrição concluída.";
-  if(document.getElementById("secPag").style.display!=="none") return "Na etapa de pagamento PIX.";
-  return "Preenchendo dados pessoais.";
-}
-function useChip(btn){ document.getElementById("maiaInput").value=btn.textContent; maiaSend(); }
-function maiaKey(e){ if(e.key==="Enter"&&!e.shiftKey){ e.preventDefault(); maiaSend(); } }
-function maiaResize(el){ el.style.height="auto"; el.style.height=Math.min(el.scrollHeight,90)+"px"; }
-
-async function maiaSend(){
-  const inp=document.getElementById("maiaInput");
-  const text=inp.value.trim();
-  if(!text||mSending) return;
-  inp.value=""; inp.style.height="auto";
-  addUser(text); mSending=true; document.getElementById("maiaSend").disabled=true; showTyping();
-  const ctx=pageCtx(); let replied=false;
-  try{
-    const r=await fetch(CFG.urlScript,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({acao:"perguntarIA",historico:maiaHistory.slice(0,-1),contexto:ctx,mensagem:text})});
-    const data=await r.json();
-    if(data?.resposta){ hideTyping(); addBot(data.resposta); replied=true; }
-  }catch(_){}
-  if(!replied){
-    try{
-      const messages=[...maiaHistory.slice(0,-1),{role:"user",content:`[${ctx}]\n\n${text}`}].filter(m=>m.role==="user"||m.role==="assistant");
-      const r2=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1000,system:MAIA_SYSTEM,messages})});
-      const d2=await r2.json();
-      hideTyping();
-      const reply=d2.content?.[0]?.text;
-      if(reply){ addBot(reply); replied=true; }
-    }catch(_){}
-  }
-  if(!replied){ hideTyping(); addBot(`Desculpe, não consegui me conectar agora. 😔 Para ajuda imediata, fale pelo WhatsApp: **(91) 99923-4635** 📲`); }
-  mSending=false; document.getElementById("maiaSend").disabled=false;
 }
 </script>
 </body>
