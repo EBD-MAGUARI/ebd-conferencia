@@ -15,11 +15,13 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:#f1f5f9;min-height:10
 
 .card{width:100%;max-width:480px;background:#fff;border-radius:20px;box-shadow:0 4px 24px rgba(0,0,0,.08);overflow:hidden;}
 
-/* TOPO */
-.topo{background:#1e3a8a;padding:28px 28px 24px;text-align:center;}
-.topo img{width:72px;height:72px;border-radius:50%;object-fit:cover;border:3px solid rgba(255,255,255,.25);margin-bottom:14px;display:block;margin-left:auto;margin-right:auto;}
-.topo h1{font-size:20px;font-weight:700;color:#fff;margin-bottom:4px;}
-.topo p{font-size:13px;color:rgba(255,255,255,.6);}
+/* HERO */
+.hero{position:relative;height:clamp(180px,40vw,260px);overflow:hidden;background:#111;}
+.hero img{width:100%;height:100%;object-fit:cover;display:block;opacity:.85;}
+.hero-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(4,8,16,.95) 0%,transparent 55%);}
+.hero-text{position:absolute;bottom:22px;left:0;right:0;padding:0 24px;}
+.hero-label{font-size:10px;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;color:#f4cf5a;margin-bottom:5px;}
+.hero-title{font-size:clamp(22px,6vw,34px);font-weight:700;color:#fff;line-height:1.15;}
 
 /* BODY */
 .corpo{padding:28px;}
@@ -96,10 +98,13 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:#f1f5f9;min-height:10
 <div class="page">
 <div class="card">
 
-  <div class="topo">
-    <img src="ebd.png" alt="EBD">
-    <h1>Conferência da EBD</h1>
-    <p>AD Maguari · Inscrições Abertas</p>
+  <div class="hero">
+    <img src="ebd.png" alt="Conferência EBD">
+    <div class="hero-overlay"></div>
+    <div class="hero-text">
+      <p class="hero-label">AD Maguari · EBD Oficial</p>
+      <h1 class="hero-title">Conferência da EBD</h1>
+    </div>
   </div>
 
   <!-- FORMULÁRIO -->
