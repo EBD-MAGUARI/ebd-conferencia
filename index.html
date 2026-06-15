@@ -86,6 +86,60 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:#f1f5f9;min-height:10
 
 /* RODAPÉ */
 .rodape{text-align:center;padding:14px;border-top:1px solid #f1f5f9;font-size:11px;color:#94a3b8;}
+
+/* ===== DESKTOP: TELA TODA ===== */
+@media(min-width:901px){
+  body{height:100vh;overflow:hidden;}
+
+  .page{padding:0;align-items:stretch;height:100vh;min-height:100vh;}
+
+  .card{
+    max-width:none;
+    width:100%;
+    height:100vh;
+    border-radius:0;
+    box-shadow:none;
+    display:flex;
+    flex-direction:row;
+    overflow:hidden;
+  }
+
+  /* coluna esquerda: imagem em tela cheia */
+  .hero{
+    width:46%;
+    height:100vh;
+    flex-shrink:0;
+  }
+  .hero-text{padding:0 56px;bottom:56px;}
+  .hero-label{font-size:13px;letter-spacing:3px;}
+  .hero-title{font-size:clamp(34px,4.5vw,56px);}
+
+  /* coluna direita: conteúdo rolável, centralizado */
+  .conteudo{
+    width:54%;
+    height:100vh;
+    display:flex;
+    flex-direction:column;
+    overflow-y:auto;
+  }
+  .conteudo-inner{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    padding:48px 64px;
+  }
+
+  .corpo{padding:0;max-width:460px;width:100%;margin:0 auto;}
+  .success{padding:0;max-width:460px;width:100%;margin:0 auto;}
+
+  .rodape{flex-shrink:0;}
+}
+
+@media(min-width:1400px){
+  .hero-text{padding:0 80px;}
+  .conteudo-inner{padding:56px 96px;}
+}
 </style>
 </head>
 <body>
@@ -106,6 +160,9 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:#f1f5f9;min-height:10
       <h1 class="hero-title">Conferência da EBD</h1>
     </div>
   </div>
+
+  <div class="conteudo">
+  <div class="conteudo-inner">
 
   <!-- FORMULÁRIO -->
   <div id="telaForm">
@@ -187,7 +244,9 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:#f1f5f9;min-height:10
     <div class="order-id" id="orderTag"></div>
   </div>
 
+  </div>
   <div class="rodape">EBD AD Maguari · 🔒 Seguro</div>
+  </div>
 
 </div>
 </div>
