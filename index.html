@@ -119,18 +119,6 @@ select{background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.o
 .pay-step.done-step .pay-step-body strong{color:var(--green);}
 .pay-step-body p{font-size:12px;color:var(--text-3);line-height:1.5;}
 
-/* UPLOAD */
-.upload-zone{border:2px dashed var(--border-2);border-radius:var(--r-lg);padding:28px 16px;text-align:center;cursor:pointer;background:var(--surface-2);transition:all .25s;position:relative;}
-.upload-zone:hover{border-color:var(--gold);background:var(--gold-bg);}
-.upload-zone.has-file{border-color:var(--green);border-style:solid;background:#f0fdf4;}
-.upload-zone input[type="file"]{display:none;}
-.upload-icon{font-size:36px;display:block;margin-bottom:10px;}
-.upload-title{font-size:14px;font-weight:600;color:var(--text-1);margin-bottom:3px;}
-.upload-hint{font-size:12px;color:var(--text-3);}
-.preview-wrap{margin-top:12px;display:none;text-align:center;}
-.preview-wrap img{max-width:100%;max-height:180px;border-radius:var(--r-md);border:1px solid var(--border);}
-.preview-name{display:block;margin-top:6px;font-size:12px;color:var(--green);font-weight:600;}
-
 /* BUTTONS */
 .btn{width:100%;height:52px;border:none;border-radius:var(--r-lg);font-family:var(--ff-sans);font-size:15px;font-weight:700;cursor:pointer;letter-spacing:.2px;display:flex;align-items:center;justify-content:center;gap:9px;transition:all .25s cubic-bezier(0.16,1,0.3,1);position:relative;overflow:hidden;margin-top:6px;}
 .btn:active:not(:disabled){transform:scale(.98);}
@@ -228,11 +216,23 @@ select{background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.o
 #maiaSend:hover{transform:scale(1.1);}
 #maiaSend:disabled{opacity:.45;cursor:not-allowed;transform:none;}
 @keyframes slideIn{from{opacity:0;transform:translateX(-12px);}to{opacity:1;transform:translateX(0);}}
+
+/* LOADING OVERLAY */
+.loading-overlay{display:none;position:fixed;inset:0;z-index:9999;background:rgba(4,8,16,.7);backdrop-filter:blur(4px);align-items:center;justify-content:center;flex-direction:column;gap:16px;}
+.loading-overlay.show{display:flex;}
+.loading-spinner{width:48px;height:48px;border:4px solid rgba(255,255,255,.15);border-top-color:var(--gold-lt);border-radius:50%;animation:spin .7s linear infinite;}
+.loading-text{font-size:14px;font-weight:600;color:rgba(255,255,255,.8);letter-spacing:.5px;}
 </style>
 </head>
 <body>
 
 <div class="scene"><div class="orb orb-a"></div><div class="orb orb-b"></div></div>
+
+<!-- Loading overlay -->
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="loading-spinner"></div>
+  <span class="loading-text">Registrando sua inscrição…</span>
+</div>
 
 <div class="page">
 <div class="card">
@@ -249,7 +249,7 @@ select{background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.o
   </div>
   <div class="shimmer-line"></div>
 
-  <!-- MAIN FORM (tudo em 1 tela) -->
+  <!-- MAIN FORM -->
   <div class="body" id="telaForm">
 
     <!-- PROGRESS -->
@@ -328,11 +328,10 @@ select{background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.o
       </button>
     </div>
 
-    <!-- PAGAMENTO (mostrado após preencher dados) -->
+    <!-- PAGAMENTO -->
     <div id="secPag" style="display:none;margin-top:10px;">
-      <p class="sec-lbl">2 — Pagamento &amp; comprovante</p>
+      <p class="sec-lbl">2 — Pagamento</p>
 
-      <!-- instrução visual em 3 passos -->
       <div class="pay-steps" id="paySteps">
         <div class="pay-step current" id="ps1">
           <div class="pay-step-num">1</div>
@@ -345,14 +344,14 @@ select{background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.o
           <div class="pay-step-num">2</div>
           <div class="pay-step-body">
             <strong>Fazer o pagamento</strong>
-            <p>Conclua o pagamento na outra aba e salve o comprovante.</p>
+            <p>Conclua o pagamento na outra aba e volte aqui.</p>
           </div>
         </div>
         <div class="pay-step" id="ps3">
           <div class="pay-step-num">3</div>
           <div class="pay-step-body">
-            <strong>Enviar o comprovante aqui</strong>
-            <p>Volte para esta página e envie a foto do comprovante.</p>
+            <strong>Confirmar inscrição</strong>
+            <p>Clique em "Já paguei" para confirmar e gerar seu comprovante.</p>
           </div>
         </div>
       </div>
@@ -362,36 +361,17 @@ select{background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.o
         🔗 Abrir pagamento PIX
       </button>
 
-      <!-- Banner "já paguei" — aparece após abrir pix -->
+      <!-- Banner "já paguei" -->
       <div class="pay-banner" id="payBanner">
         <div class="pay-banner-head">
           <span>✅</span>
           <strong>Já fez o pagamento?</strong>
         </div>
-        <p>Ótimo! Agora é só enviar o comprovante aqui embaixo para confirmar sua vaga.</p>
-        <button class="btn btn-sm btn-confirm" onclick="mostrarUpload()">Já paguei — enviar comprovante</button>
+        <p>Ótimo! Clique no botão abaixo para confirmar sua inscrição agora mesmo.</p>
+        <button class="btn btn-sm btn-confirm" id="btnJaPaguei" onclick="confirmarDireto()">✅ Já paguei — confirmar inscrição</button>
       </div>
 
-      <!-- Upload comprovante — aparece após clicar "já paguei" -->
-      <div id="secUpload" style="display:none;margin-top:20px;">
-        <div class="field">
-          <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileComp').click()">
-            <input type="file" id="fileComp" accept="image/*,.pdf" onchange="handleUpload(this)">
-            <span class="upload-icon">📎</span>
-            <h3 class="upload-title">Toque para selecionar o comprovante</h3>
-            <p class="upload-hint">Imagem (JPG, PNG) ou PDF</p>
-          </div>
-          <div class="preview-wrap" id="prevWrap">
-            <img id="prevImg" src="" alt="">
-            <span class="preview-name" id="prevName"></span>
-          </div>
-        </div>
-
-        <button class="btn btn-confirm" id="btnConfirm" onclick="doConfirm()">
-          ✅ Confirmar inscrição
-        </button>
-        <div id="statusMsg"></div>
-      </div>
+      <div id="statusMsg"></div>
     </div>
 
   </div><!-- /telaForm -->
@@ -463,13 +443,13 @@ function goToPayment(){
   const errEl = document.getElementById("dadosErr");
   errEl.textContent = ""; errEl.classList.remove("show");
 
-  const nome   = document.getElementById("f_nome").value.trim();
-  const tel    = document.getElementById("f_tel").value.trim();
-  const area   = document.getElementById("f_area").value;
-  const cong   = document.getElementById("f_cong").value.trim();
-  const grupo  = document.getElementById("f_grupo").value.trim();
+  const nome  = document.getElementById("f_nome").value.trim();
+  const tel   = document.getElementById("f_tel").value.trim();
+  const area  = document.getElementById("f_area").value;
+  const cong  = document.getElementById("f_cong").value.trim();
+  const grupo = document.getElementById("f_grupo").value.trim();
 
-  const checks = [{v:nome, l:"nome completo"},{v:tel, l:"telefone"},{v:area, l:"área"},{v:cong, l:"congregação"},{v:grupo, l:"grupo"}];
+  const checks = [{v:nome,l:"nome completo"},{v:tel,l:"telefone"},{v:area,l:"área"},{v:cong,l:"congregação"},{v:grupo,l:"grupo"}];
   for(const c of checks){
     if(!c.v){ errEl.textContent = `⚠️ Por favor, preencha o campo "${c.l}".`; errEl.classList.add("show"); return; }
   }
@@ -477,7 +457,6 @@ function goToPayment(){
   participant = { nome, telefone:tel, congregacao:cong, grupo, area, orderId:"EBD-"+Date.now() };
   try{ sessionStorage.setItem("ebd_p", JSON.stringify(participant)); }catch(_){}
 
-  // Esconder seção dados, mostrar pagamento
   document.getElementById("secDados").style.display = "none";
   document.getElementById("secPag").style.display   = "block";
   setStep(2);
@@ -486,60 +465,52 @@ function goToPayment(){
 
 function abrirPix(){
   window.open(CFG.urlPagamento, "_blank");
-  // Marcar passo 1 como feito, passo 2 como atual
-  document.getElementById("ps1").classList.remove("current"); document.getElementById("ps1").classList.add("done-step");
+  document.getElementById("ps1").classList.remove("current");
+  document.getElementById("ps1").classList.add("done-step");
   document.getElementById("ps1").querySelector(".pay-step-num").textContent = "✓";
   document.getElementById("ps2").classList.add("current");
   document.getElementById("btnAbrirPix").textContent = "🔗 Reabrir pagamento PIX";
-  // Mostrar banner após 3s
   setTimeout(()=>{ document.getElementById("payBanner").classList.add("show"); }, 3000);
 }
 
-function mostrarUpload(){
-  document.getElementById("payBanner").style.display = "none";
-  document.getElementById("ps2").classList.remove("current"); document.getElementById("ps2").classList.add("done-step");
+async function confirmarDireto(){
+  // Atualiza visual dos passos
+  document.getElementById("ps2").classList.remove("current");
+  document.getElementById("ps2").classList.add("done-step");
   document.getElementById("ps2").querySelector(".pay-step-num").textContent = "✓";
   document.getElementById("ps3").classList.add("current");
-  document.getElementById("secUpload").style.display = "block";
-  window.scrollTo({top:document.body.scrollHeight, behavior:"smooth"});
-}
+  document.getElementById("payBanner").style.display = "none";
 
-function handleUpload(inp){
-  if(!inp.files?.[0]) return;
-  const f = inp.files[0];
-  const zone = document.getElementById("uploadZone");
-  zone.classList.add("has-file");
-  zone.querySelector(".upload-title").textContent = "Arquivo selecionado ✓";
-  document.getElementById("prevName").textContent = f.name;
-  document.getElementById("prevWrap").style.display = "block";
-  const img = document.getElementById("prevImg");
-  if(f.type.startsWith("image/")){
-    const r = new FileReader(); r.onload = e => { img.src = e.target.result; img.style.display = "block"; }; r.readAsDataURL(f);
-  } else { img.style.display = "none"; }
-}
+  // Mostra loading
+  const overlay = document.getElementById("loadingOverlay");
+  overlay.classList.add("show");
 
-async function doConfirm(){
-  const fi  = document.getElementById("fileComp");
-  const msg = document.getElementById("statusMsg");
-  const btn = document.getElementById("btnConfirm");
-  if(!fi.files?.[0]){ msg.style.color="var(--red)"; msg.textContent="⚠️ Selecione o comprovante antes de confirmar."; return; }
-  btn.disabled = true;
-  msg.style.color = "var(--cobalt)";
-  msg.innerHTML = `<span class="spinner"></span> Registrando sua inscrição…`;
-  const file = fi.files[0];
-  const reader = new FileReader();
-  reader.onload = async function(){
-    const b64 = reader.result.split(",")[1];
-    const payload = { ...participant, acao:"salvarInscricao", arquivoBase64:b64, arquivoNome:file.name, arquivoMime:file.type };
-    try{
-      await fetch(CFG.urlScript,{method:"POST",mode:"no-cors",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});
-      try{ sessionStorage.removeItem("ebd_p"); }catch(_){}
-      showSuccess(participant);
-    }catch(err){
-      msg.style.color="var(--red)"; msg.innerHTML="❌ Erro ao enviar. Verifique sua internet e tente novamente."; btn.disabled=false;
-    }
+  const payload = {
+    ...participant,
+    acao: "salvarInscricao",
+    arquivoBase64: "",
+    arquivoNome: "",
+    arquivoMime: ""
   };
-  reader.readAsDataURL(file);
+
+  try {
+    await fetch(CFG.urlScript, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+    try{ sessionStorage.removeItem("ebd_p"); }catch(_){}
+    overlay.classList.remove("show");
+    showSuccess(participant);
+  } catch(err) {
+    overlay.classList.remove("show");
+    const msg = document.getElementById("statusMsg");
+    msg.style.color = "var(--red)";
+    msg.innerHTML = "❌ Erro ao enviar. Verifique sua internet e tente novamente.";
+    // Reexibe o banner para tentar de novo
+    document.getElementById("payBanner").style.display = "block";
+  }
 }
 
 function showSuccess(d){
@@ -567,8 +538,8 @@ let maiaOpen=false, maiaHistory=[], mSending=false, tipTimer=null;
 const MAIA_SYSTEM = `Você é a Maia, assistente virtual oficial de inscrições da Conferência da EBD — AD Maguari.
 Sua personalidade: calorosa, cristã, objetiva, profissional e acolhedora.
 DADOS: Valor R$35,00 via PIX. Áreas: Curuçambá, Distrito Industrial, PAAR, Guajará.
-FLUXO SIMPLIFICADO: 1) Preencher dados e clicar "Próximo" 2) Clicar "Abrir pagamento PIX" → pagar → voltar → "Já paguei" 3) Fazer upload do comprovante → confirmar → enviar no WhatsApp ao líder.
-PROBLEMAS: Pop-up bloqueado→trocar navegador. Erro upload→usar JPG/PNG. Falha→verificar internet.
+FLUXO SIMPLIFICADO: 1) Preencher dados e clicar "Próximo" 2) Clicar "Abrir pagamento PIX" → pagar → voltar → clicar "Já paguei — confirmar inscrição" → pronto! 3) Enviar confirmação no WhatsApp ao líder.
+PROBLEMAS: Pop-up bloqueado→trocar navegador. Falha→verificar internet.
 SUPORTE: WhatsApp (91) 99923-4635. Respostas curtas (3-4 frases), PT-BR informal mas respeitoso.`;
 
 setTimeout(()=>{ const t=document.getElementById("maiaTip"); t.style.display="block"; tipTimer=setTimeout(()=>t.style.display="none",5000); },3500);
@@ -612,7 +583,6 @@ function showTyping(){
 function hideTyping(){ document.getElementById("typingRow")?.remove(); }
 function pageCtx(){
   if(document.getElementById("telaOk").style.display!=="none") return "Inscrição concluída.";
-  if(document.getElementById("secUpload").style.display!=="none") return "Enviando comprovante.";
   if(document.getElementById("secPag").style.display!=="none") return "Na etapa de pagamento PIX.";
   return "Preenchendo dados pessoais.";
 }
