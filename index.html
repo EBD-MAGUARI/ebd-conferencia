@@ -182,8 +182,8 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:#f1f5f9;min-height:10
   <div class="success" id="telaOk">
     <span class="s-icon">🎉</span>
     <h2>Inscrição Confirmada!</h2>
-    <p>Seus dados foram registrados.<br>Envie a confirmação pelo WhatsApp ao seu líder de área.</p>
-    <a id="zapBtn" href="#" target="_blank" class="btn-zap">📲 Enviar no WhatsApp</a>
+    <p>Seus dados foram registrados com sucesso.<br>Envie o comprovante pelo WhatsApp para que seu líder de área finalize sua vaga.</p>
+    <a id="zapBtn" href="#" target="_blank" class="btn-zap">📲 Enviar comprovante no WhatsApp</a>
     <div class="order-id" id="orderTag"></div>
   </div>
 
@@ -268,7 +268,7 @@ async function confirmar(){
 
 function mostrarSucesso(){
   const d = participant;
-  const texto = `📚 CONFERÊNCIA DA EBD\nCONFIRMAÇÃO DE INSCRIÇÃO\n\n👤 ${d.nome}\n📞 ${d.telefone}\n⛪ ${d.congregacao}\n👥 ${d.grupo}\n📍 ${d.area}\n🆔 ${d.orderId}\n\nInscrição confirmada com sucesso!\n\nSecretaria da EBD`;
+  const texto = `📚 CONFERÊNCIA DA EBD\nCONFIRMAÇÃO DE INSCRIÇÃO\n\nInformamos que o pagamento referente à sua inscrição foi confirmado com sucesso.\nOs dados abaixo foram registrados em nosso sistema:\n\n👤 Participante: ${d.nome}\n📞 Telefone: ${d.telefone}\n⛪ Congregação: ${d.congregacao}\n👥 Grupo: ${d.grupo}\n📍 Área: ${d.area}\n🆔 Número do Pedido: ${d.orderId}\n\nSua participação na Conferência da EBD está oficialmente confirmada.\n\nSolicitamos que esta confirmação seja mantida para apresentação no credenciamento do evento.\n\nAtenciosamente,\nSecretaria da EBD`;
   document.getElementById("zapBtn").href = `https://wa.me/${CFG.numeroZap}?text=${encodeURIComponent(texto)}`;
   document.getElementById("orderTag").textContent = `ID: ${d.orderId}`;
   document.getElementById("telaForm").style.display = "none";
